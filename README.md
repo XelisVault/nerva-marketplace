@@ -1,6 +1,6 @@
 # Nerva Marketplace Software
 
-## Setup
+## Quick Setup
 
 Run `backend/create_bridge_network.sh`
 
@@ -11,4 +11,16 @@ Start frontend: `cd frontend && npm install && npm start`
 
 ## User Guide
 
-[docs/USER_GUIDE.md](docs/USER_GUIDE.md)
+[USER_GUIDE.md](docs/USER_GUIDE.md)
+
+## Backend Docs
+
+[backend README.md](backend/README.md)
+
+[market service architecture](backend/market_service/docs/architecture.md)
+
+[market service testing](backend/market_service/docs/testing.md)
+
+[invoice service architecture](backend/invoice_service/docs/architecture.md)
+
+[invoice service REST API](backend/invoice_service/docs/rest_api.md)
