@@ -48,20 +48,22 @@ async def verify_tx(tx_id:str):
                     return None, None
                 if atomicUnitsToDecimal(int(txs_found[0]['amount'])) >= tx_invoice_rows[0]['amount']:
                     cur.execute("UPDATE invoices SET status='confirmed' WHERE address = %s", (recipient_address))
-                    return atomicUnitsToDecimal(int(txs_found[0]['amount'])), 1
+                    cur.execute("SELECT invoice_id FROM invoices WHERE address=%s", (recipient_address))
+                    invoice_id = cur.fetchone()["invoice_id"]
+                    return atomicUnitsToDecimal(int(txs_found[0]['amount'])), 1, invoice_id
                 else:
                     print(f'tx amount {txs_found[0]["amount"]} < invoice amount {tx_invoice_rows[0]["amount"]}')
     return None, None
 
 async def main():
     await asyncio.sleep(2)
-    message = sys.argv[1]
-    print("process_new_tx", message)
-    tx_amount, confirmations = await verify_tx(message)
+    tx_id = sys.argv[1]
+    print("process_new_tx", tx_id)
+    tx_amount, confirmations, invoice_id = await verify_tx(tx_id)
     confirmations = confirmations if confirmations else 0
     if tx_amount:
-        push_to_rabbit_mq(f'{message},{tx_amount},{confirmations}')
-        print(f"Sent '{message},{tx_amount},{confirmations}'")
+        push_to_rabbit_mq(f'{tx_id},{tx_amount},{confirmations},{invoice_id}')
+        print(f"Sent '{tx_id},{tx_amount},{confirmations},{invoice_id}'")
 
 if __name__ == "__main__":
     asyncio.run(main())
