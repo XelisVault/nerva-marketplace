@@ -18,7 +18,7 @@ async def broadcast(message):
     print("broadcast")
     # Send the message to all connected WebSocket clients
     if clients:  # Check if there are any connected clients
-        print("broadcast clients", message)
+        print("broadcast clients", message, clients)
         # Await all send operations
         await asyncio.gather(*(client.send(message) for client in clients))
 

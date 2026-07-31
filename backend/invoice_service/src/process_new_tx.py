@@ -45,7 +45,7 @@ async def verify_tx(tx_id:str):
                 cur.execute("SELECT * FROM invoices WHERE address = %s", (recipient_address))
                 tx_invoice_rows = cur.fetchall()
                 if not tx_invoice_rows:
-                    return None, None
+                    return None, None, None
                 if atomicUnitsToDecimal(int(txs_found[0]['amount'])) >= tx_invoice_rows[0]['amount']:
                     cur.execute("UPDATE invoices SET status='confirmed' WHERE address = %s", (recipient_address))
                     cur.execute("SELECT invoice_id FROM invoices WHERE address=%s", (recipient_address))
@@ -53,7 +53,7 @@ async def verify_tx(tx_id:str):
                     return atomicUnitsToDecimal(int(txs_found[0]['amount'])), 1, invoice_id
                 else:
                     print(f'tx amount {txs_found[0]["amount"]} < invoice amount {tx_invoice_rows[0]["amount"]}')
-    return None, None
+    return None, None, None
 
 async def main():
     await asyncio.sleep(2)
