@@ -4,23 +4,26 @@ import pika
 import time
 from pika.adapters.asyncio_connection import AsyncioConnection
 
-clients = set()  # Set to keep track of connected WebSocket clients
+clients = {}  # dict to keep track of connected WebSocket clients
 time.sleep(12)
-async def websocket_handler(websocket, path=None):
-    clients.add(websocket)
+async def websocket_handler(websocket):
+    print("client connected with path", websocket.request.path)
+    client_id = websocket.request.path[1:]
+    clients[client_id] = websocket
     try:
         # Wait for the websocket connection to close
         await websocket.wait_closed()
     finally:
-        clients.remove(websocket)
+        del clients[client_id]
 
 async def broadcast(message):
-    print("broadcast")
+    print("broadcast", message)
+    invoice_id = message.split(",")[-1]
     # Send the message to all connected WebSocket clients
-    if clients:  # Check if there are any connected clients
+    if clients and invoice_id in clients: # Check if there are any connected clients
         print("broadcast clients", message, clients)
         # Await all send operations
-        await asyncio.gather(*(client.send(message) for client in clients))
+        await clients[invoice_id].send(message)
 
 class RabbitMQConsumer:
     def __init__(self, loop):
