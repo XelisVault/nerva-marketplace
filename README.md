@@ -2,12 +2,12 @@
 
 ## Setup
 
-Run `services/create_bridge_network.sh`
+Run `backend/create_bridge_network.sh`
 
-Start the market services backend: `cd services/market_service/backend/infrastructure && docker compose up --build`
-Start the market services frontend: `cd services/market_service/frontend && npm install && npm start`
+Start the market services backend: `cd backend/market_service/infrastructure && docker compose up --build`
+Start the invoice services backend `cd backend/invoice_services/infrastructure && docker compose up --build`
 
-Start the invoice services backend `cd services/invoice_services/backend/infrastructure && docker compose up --build`
+Start frontend: `cd frontend && npm install && npm start`
 
 ## User Guide
 

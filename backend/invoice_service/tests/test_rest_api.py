@@ -3,7 +3,7 @@ import copy
 import requests
 
 import pymysql
-from src.dependencies import db_config
+from backend.invoice_service.src.dependencies import db_config
 
 class TestInvoiceAPIs(unittest.TestCase):
 

@@ -8,3 +8,8 @@ The marketplace depends on the invoice service to generate payment invoices at t
 
 ## The SQL Database
 
+The schema is found in `infrastracture/schema.sql`
+
+## Docker Environment
+
+`cd infrastructure && docker compose up --build`

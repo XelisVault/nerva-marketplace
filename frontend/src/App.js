@@ -5,16 +5,16 @@ import {
   Route,
   //Link
 } from "react-router-dom";
-import Login from "./Login";
-import Registration from "./Registration";
-import UserActivationPage from "./UserActivaton";
-import ListingCreateForm from "./ListingCreateForm";
-import ListingsDisplay from "./ListingsDisplay";
+import Login from "./Login.js";
+import Registration from "./Registration.js";
+import UserActivationPage from "./UserActivaton.js";
+import ListingCreateForm from "./ListingCreateForm.js";
+import ListingsDisplay from "./ListingsDisplay.js";
 import Cart from './Cart.js'
 import Invoice from "./Invoice.js";
 import Listing from "./Listing.js"
 import VendorOrders from "./VendorOrders.js"
-import UserContext from './UserContext';
+import UserContext from './UserContext.js';
 
 const Home = () => {
   const userDetails = useContext(UserContext);
