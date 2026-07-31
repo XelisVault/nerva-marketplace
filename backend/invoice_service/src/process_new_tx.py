@@ -16,6 +16,9 @@ from nerva.wallet_rpc import WalletRPC
 
 QUEUE_NAME = 'tx_notifications'
 
+def atomicUnitsToDecimal(atomic_units:int):
+    return float(atomic_units) / 1000000000000.0
+
 def push_to_rabbit_mq(message:str):
     connection_params = pika.ConnectionParameters(host='rabbitmq', port=5672, credentials=pika.PlainCredentials('user', 'passwordkkjhgq')) # for docker
     connection = pika.BlockingConnection(connection_params)
@@ -43,9 +46,9 @@ async def verify_tx(tx_id:str):
                 tx_invoice_rows = cur.fetchall()
                 if not tx_invoice_rows:
                     return None, None
-                if txs_found[0]['amount'] >= tx_invoice_rows[0]['amount']:
+                if atomicUnitsToDecimal(int(txs_found[0]['amount'])) >= tx_invoice_rows[0]['amount']:
                     cur.execute("UPDATE invoices SET status='confirmed' WHERE address = %s", (recipient_address))
-                    return float(txs_found[0]['amount']), 1
+                    return atomicUnitsToDecimal(int(txs_found[0]['amount'])), 1
                 else:
                     print(f'tx amount {txs_found[0]["amount"]} < invoice amount {tx_invoice_rows[0]["amount"]}')
     return None, None
