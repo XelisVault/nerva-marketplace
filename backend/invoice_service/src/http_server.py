@@ -24,7 +24,7 @@ app.add_middleware(
 # route handlers
 @app.get("/")
 def root():
-    return "Hello World"
+    return "Nerva Invoices"
 
 class InvoiceCreateRequest(BaseModel):
     amount: float
