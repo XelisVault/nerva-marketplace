@@ -1,4 +1,5 @@
 import sys
+import math
 import time
 import pika
 import asyncio
@@ -55,11 +56,12 @@ async def verify_tx(tx_id:str):
                 tx_invoice_rows = cur.fetchall()
                 if not tx_invoice_rows:
                     return None, None, None
-                if atomicUnitsToDecimal(int(txs_found[0]['amount'])) >= tx_invoice_rows[0]['amount']:
+                amountFloat = atomicUnitsToDecimal(int(txs_found[0]['amount']))
+                if amountFloat >= tx_invoice_rows[0]['amount'] or math.isclose(amountFloat, tx_invoice_rows[0]['amount']): # todo: this can be done safer..
                     cur.execute("UPDATE invoices SET status='confirmed' WHERE address = %s", (recipient_address))
                     cur.execute("SELECT invoice_id FROM invoices WHERE address=%s", (recipient_address))
                     invoice_id = cur.fetchone()["invoice_id"]
-                    return atomicUnitsToDecimal(int(txs_found[0]['amount'])), 1, invoice_id
+                    return amountFloat, 1, invoice_id # hardcode 1 confirmation
                 else:
                     print(f'tx amount {txs_found[0]["amount"]} < invoice amount {tx_invoice_rows[0]["amount"]}')
     return None, None, None
