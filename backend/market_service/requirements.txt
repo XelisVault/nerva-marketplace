@@ -7,3 +7,4 @@ pytest
 requests
 python-multipart
 redispy
+pydantic-settings

@@ -12,6 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
 from .dependencies import get_db, get_sessions
+from .config import settings
 
 cart_router = APIRouter()
 
@@ -72,7 +73,7 @@ async def checkout(session_id:str=Cookie(None), session_storage=Depends(get_sess
             elif vendor_username != listing_record["vendor"]:
                 return 505
     # create an invoice for the cart order
-    invoice_create_response = requests.post("http://payments_rest_microservices:8002/invoice/create", json={"amount": cart_total})
+    invoice_create_response = requests.post(f"{settings.PAYMENTS_BASE_URL}/invoice/create", json={"amount": cart_total})
     # clear the session cart if successful
     assert invoice_create_response.status_code == 200
     session_storage.clearCart(session_id)

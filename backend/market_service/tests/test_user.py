@@ -14,7 +14,8 @@ class TestUserAPIs(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.test_host = "http://127.0.0.1:8001"
+        import os
+        cls.test_host = os.environ.get("MARKET_SERVICE_BASE_URL", "http://127.0.0.1:8001")
         cls.sql_client = pymysql.connect(**TestUserAPIs.sql_config)
 
     def setUp(self):

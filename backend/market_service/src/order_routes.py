@@ -12,6 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
 from .dependencies import get_db, get_sessions
+from .config import settings
 
 orders_router = APIRouter()
 
@@ -28,7 +29,7 @@ async def get_vendor_orders(session_id:str=Cookie(None), session_storage=Depends
         vendor_orders = await cur.fetchall()
     result = []
     for order in vendor_orders:
-        order_invoice_details = requests.get(f"http://payments_rest_microservices:8002/invoice/{order['invoice_id']}")
+        order_invoice_details = requests.get(f"{settings.PAYMENTS_BASE_URL}/invoice/{order['invoice_id']}")
         print(order_invoice_details.json())
         order['status'] = order_invoice_details.json()['status']
         order['create_time'] = order['create_time'].strftime("%Y-%m-%d %H:%M:%S")

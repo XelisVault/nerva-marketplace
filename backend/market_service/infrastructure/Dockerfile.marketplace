@@ -7,6 +7,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 ENV DB_HOST="db"
 ENV CACHE_HOST="redis"
+ENV PAYMENTS_BASE_URL="http://payments_rest_microservices:8002"
+ENV MARKET_SERVICE_BASE_URL="http://127.0.0.1:8001"
+COPY ./src/config.py .
 
 EXPOSE 8001
 
