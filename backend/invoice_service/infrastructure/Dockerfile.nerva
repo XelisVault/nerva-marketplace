@@ -13,8 +13,12 @@ RUN tar -xf nerva-linux-x86_64-v0.3.0.0.tar.bz2
 COPY ./keys .
 COPY ./src/process_new_tx.py .
 COPY ./src/dependencies.py .
+COPY ./src/config.py .
 
 ENV DB_HOST="db_invoice"
+ENV WALLET_RPC_HOST="nerva"
+ENV RABBITMQ_HOST="rabbitmq"
+ENV RABBITMQ_PORT="5672"
 
 EXPOSE 28082
 

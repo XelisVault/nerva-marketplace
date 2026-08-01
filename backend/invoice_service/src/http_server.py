@@ -1,11 +1,10 @@
-import os
 import uuid
-import logging
 from pydantic import BaseModel
 
 from fastapi import FastAPI, Request, Depends, HTTPException, Response, Cookie
 from fastapi.middleware.cors import CORSMiddleware
 
+from .config import settings
 from .dependencies import get_db
 
 from nerva.wallet_rpc import WalletRPC
@@ -13,11 +12,7 @@ from nerva.wallet_rpc import WalletRPC
 app = FastAPI()
 
 # CORS
-origins = [
-    "http://127.0.0.1:3000",
-    "http://localhost:3000",
-    "http://192.168.1.167:3000"
-]
+origins = settings.CORS_ORIGINS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -35,7 +30,7 @@ class InvoiceCreateRequest(BaseModel):
     amount: float
 @app.post("/invoice/create")
 async def create_invoice(request:InvoiceCreateRequest, sql_client=Depends(get_db)):
-    wallet = WalletRPC(host="nerva", port=28082)
+    wallet = WalletRPC(host=settings.WALLET_RPC_HOST, port=settings.WALLET_RPC_PORT)
     address = (await wallet.create_address(account_index=0))['result']['address']
     async with sql_client.cursor() as cur:
         # make the record the invoice in the database

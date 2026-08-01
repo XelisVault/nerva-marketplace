@@ -4,12 +4,17 @@ import pika
 import asyncio
 import pymysql
 
+try:
+    from .config import settings
+except ImportError:
+    from config import settings
+
 db_config = {
-    "host": "db_invoice",
-    "user": "root",
-    "password": "kkfkffspassss",
-    "db": "invoices_db",
-    "autocommit": True
+    "host": settings.DB_HOST,
+    "user": settings.DB_USER,
+    "password": settings.DB_PASS,
+    "db": settings.DB_NAME,
+    "autocommit": True,
 }
 
 from nerva.wallet_rpc import WalletRPC
@@ -20,7 +25,11 @@ def atomicUnitsToDecimal(atomic_units:int):
     return float(atomic_units) / 1000000000000.0
 
 def push_to_rabbit_mq(message:str):
-    connection_params = pika.ConnectionParameters(host='rabbitmq', port=5672, credentials=pika.PlainCredentials('user', 'passwordkkjhgq')) # for docker
+    connection_params = pika.ConnectionParameters(
+        host=settings.RABBITMQ_HOST,
+        port=settings.RABBITMQ_PORT,
+        credentials=pika.PlainCredentials(settings.RABBITMQ_USER, settings.RABBITMQ_PASS),
+    )
     connection = pika.BlockingConnection(connection_params)
     channel = connection.channel()
     channel.queue_declare(queue=QUEUE_NAME)
@@ -29,7 +38,7 @@ def push_to_rabbit_mq(message:str):
 
 async def verify_tx(tx_id:str):
     # todo: it's not sustainable to search through the whole tx history each time - figure out how to query the wallet server by txid
-    wallet = WalletRPC(host="127.0.0.1", port=28082) # localhost because this runs on the same host as the rpc server
+    wallet = WalletRPC(host=settings.WALLET_RPC_HOST, port=settings.WALLET_RPC_PORT)
     address_count = len((await wallet.get_address(account_index=0))['result']['addresses'])
     all_txs = await wallet.incoming_transfers(transfer_type="all", account_index=0, subaddr_indices=list(range(address_count)), verbose=True)
     print("all_txs", all_txs)
@@ -56,7 +65,7 @@ async def verify_tx(tx_id:str):
     return None, None, None
 
 async def main():
-    await asyncio.sleep(2)
+    await asyncio.sleep(12)
     tx_id = sys.argv[1]
     print("process_new_tx", tx_id)
     tx_amount, confirmations, invoice_id = await verify_tx(tx_id)

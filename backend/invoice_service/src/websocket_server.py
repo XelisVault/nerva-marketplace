@@ -4,6 +4,13 @@ import pika
 import time
 from pika.adapters.asyncio_connection import AsyncioConnection
 
+try:
+    from .config import settings
+except ImportError:
+    from config import settings
+
+QUEUE_NAME = 'tx_notifications'
+
 clients = {}  # dict to keep track of connected WebSocket clients
 time.sleep(12)
 async def websocket_handler(websocket):
@@ -36,15 +43,19 @@ class RabbitMQConsumer:
         channel.basic_ack(delivery_tag=method.delivery_tag)
 
     def on_channel_open(self, channel):
-        channel.queue_declare(queue='tx_notifications', durable=False)
-        channel.basic_consume(queue='tx_notifications', on_message_callback=self.on_rabbit_message)
+        channel.queue_declare(queue=QUEUE_NAME, durable=False)
+        channel.basic_consume(queue=QUEUE_NAME, on_message_callback=self.on_rabbit_message)
 
     def on_open_connection(self, connection):
         self.connection = connection
         connection.channel(on_open_callback=self.on_channel_open)
 
     def setup(self):
-        parameters = pika.ConnectionParameters('rabbitmq', credentials=pika.PlainCredentials('user', 'passwordkkjhgq'))
+        parameters = pika.ConnectionParameters(
+            host=settings.RABBITMQ_HOST,
+            port=settings.RABBITMQ_PORT,
+            credentials=pika.PlainCredentials(settings.RABBITMQ_USER, settings.RABBITMQ_PASS),
+        )
         AsyncioConnection(parameters, on_open_callback=self.on_open_connection, custom_ioloop=self.loop)
 
 async def main():
@@ -53,7 +64,7 @@ async def main():
     consumer.setup()
 
     # Setup WebSocket Server
-    async with websockets.serve(websocket_handler, "0.0.0.0", 8765):
+    async with websockets.serve(websocket_handler, settings.WEBSOCKET_HOST, settings.WEBSOCKET_PORT):
         await asyncio.Future()  # Run indefinitely
 
 asyncio.run(main())

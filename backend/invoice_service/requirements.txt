@@ -9,3 +9,4 @@ python-multipart
 nerva-py
 pika
 websockets
+pydantic-settings

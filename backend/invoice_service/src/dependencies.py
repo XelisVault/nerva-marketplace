@@ -1,15 +1,16 @@
-import os
 import uuid
-import json
 import copy
 import aiomysql
 
+from .config import settings
+
+
 db_config = {
-    "host": os.environ.get("DB_HOST", "127.0.0.1"),
-    "user": os.environ.get("DB_USER", "root"),
-    "password": os.environ.get("DB_PASS", "kkfkffspassss"),
-    "db": os.environ.get("DB_NAME", "invoices_db"),
-    "autocommit": True
+    "host": settings.DB_HOST,
+    "user": settings.DB_USER,
+    "password": settings.DB_PASS,
+    "db": settings.DB_NAME,
+    "autocommit": True,
 }
 
 async def get_db():
