@@ -14,15 +14,12 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: "user"
       RABBITMQ_DEFAULT_PASS: "passwordkkjhgq"
-    ports:
-      - "5672:5672"
 
   nerva: # nerva-wallet-rpc with transaction notifier
     build:
       context: ..
       dockerfile: infrastructure/Dockerfile.nerva
-    ports:
-      - 28082:28082
+
   # Servers
   payments_rest_microservices: # REST Server for Payments Microservices
     build:
