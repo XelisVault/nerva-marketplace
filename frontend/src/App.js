@@ -17,13 +17,7 @@ import VendorOrders from "./VendorOrders.js"
 import UserContext from './UserContext.js';
 
 const Home = () => {
-  const userDetails = useContext(UserContext);
-
-  if (userDetails === null) {
-    return <Login/>
-  } else {
-    return <ListingsDisplay/>
-  }
+  return <ListingsDisplay/>
 }
 
 function App() {

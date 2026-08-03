@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 import './login.css'
 
@@ -7,6 +7,8 @@ const LoginCard = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
+    const location = useLocation();
+    const returnTo = location.state && location.state.from ? location.state.from : '/listings';
 
     const postLoginRequest = async (username, password) => {
         const response = await fetch(process.env.REACT_APP_MARKET_MICROSERVICES+'/users/login', {
@@ -24,7 +26,7 @@ const LoginCard = () => {
         e.preventDefault();
         postLoginRequest(username, password).then(status => {
             if (status === 200) {
-              navigate("/listings");
+              navigate(returnTo);
             } else {
               console.log('Login failed with status:', status);
             }
