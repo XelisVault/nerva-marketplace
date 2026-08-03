@@ -26,7 +26,8 @@ CREATE TABLE listings (
     description VARCHAR(2048) NOT NULL,
     image_name VARCHAR(255) NOT NULL,
     price_xnv DECIMAL(20,12),
-    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    quantity_available INT DEFAULT 1
 );
 
 DROP TABLE IF EXISTS `orders`;

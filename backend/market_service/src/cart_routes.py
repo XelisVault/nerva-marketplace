@@ -64,7 +64,7 @@ async def checkout(session_id:str=Cookie(None), session_storage=Depends(get_sess
         cart_total = 0
         vendor_username = None
         for item in cart["items"]:
-            await cur.execute("SELECT vendor, price_xnv FROM listings WHERE listing_id = %s", (item))
+            await cur.execute("SELECT vendor, price_xnv, quantity_available FROM listings WHERE listing_id = %s", (item))
             listing_record = await cur.fetchone()
             cart_total += float((listing_record)["price_xnv"])
             # for now, assert that all order items in a listing come from the same vendor
@@ -72,6 +72,8 @@ async def checkout(session_id:str=Cookie(None), session_storage=Depends(get_sess
                 vendor_username = listing_record["vendor"]
             elif vendor_username != listing_record["vendor"]:
                 return 505
+            if int(listing_record["quantity_available"]) <= 0:
+                return 600
     # create an invoice for the cart order
     invoice_create_response = requests.post(f"{settings.PAYMENTS_BASE_URL}/invoice/create", json={"amount": cart_total})
     # clear the session cart if successful
@@ -85,4 +87,5 @@ async def checkout(session_id:str=Cookie(None), session_storage=Depends(get_sess
         for order_item in cart["items"]:
             await cur.execute("INSERT INTO order_items (order_id, item_listing_id) VALUES (%s,%s)", (order_id, order_item))
         await cur.execute("INSERT INTO order_shipping (order_id, shipping_note) VALUES (%s, %s)", (order_id, shipping_data))
+        # await cur.execute("UPDATE listings quantity_available=0 WHERE listing_id IN (SELECT item_listing_id as listing_id FROM order_items WHERE order_id=%s)", (order_id))
     return invoice_create_response.json()
