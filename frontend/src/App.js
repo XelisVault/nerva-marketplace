@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useContext} from "react";
+import React, {useEffect, useState} from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -21,7 +21,8 @@ const Home = () => {
 }
 
 function App() {
-  const [userDetails, setUser] = useState(null);
+  const [userDetails, setUser] = useState(undefined);
+  const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
     const getWhoami = async () => {
@@ -34,17 +35,22 @@ function App() {
         if (response.status === 200) {
           const userData = await response.json();
           setUser(userData);
+        } else {
+          setUser(null);
         }
       } catch (error) {
         console.error('Error:', error);
+        setUser(null);
+      } finally {
+        setAuthChecked(true);
       }
     };
 
-    if (userDetails === null) getWhoami();
-  }, [userDetails]);
+    if (!authChecked) getWhoami();
+  }, [authChecked]);
 
   return (
-    <UserContext.Provider value={userDetails}>
+    <UserContext.Provider value={{ userDetails, authChecked }}>
       <Router>
           <Routes>
             <Route path="/register" element={<Registration />} />

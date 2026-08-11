@@ -32,14 +32,14 @@ const NavButton = ({ onClick }) => {
 
 const NavTab = ({ isOpen }) => {
     const navigate = useNavigate();
-    const userDetails = useContext(UserContext);
+    const { userDetails } = useContext(UserContext);
     const isVendor = Boolean(userDetails && userDetails.is_vendor);
 
     return (
         <div className={`navbar ${isOpen ? 'open' : ''}`}>
             {isVendor && <button onClick={() => {navigate('/create_listing')}}>Create Listing</button>}
             {isVendor && <button onClick={() => {navigate('/vendor/orders')}}>Vendor Orders</button>}
-            <button>Logout</button>
+            {userDetails ? <button>Logout</button> : <button>Login</button>}
         </div>
     );
 };

@@ -10,7 +10,7 @@ const Listing = () => {
     const [listing_details, setDetails] = useState(null);
     const [showModal, setModalState] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
-    const userDetails = useContext(UserContext);
+    const { userDetails, authChecked } = useContext(UserContext);
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -29,6 +29,10 @@ const Listing = () => {
     }, [listing_id]);
 
     const postAddToCartRequest = async () => {
+        if (!authChecked) {
+            return;
+        }
+
         // If the user is not logged in, show login prompt modal (preserve return location)
         if (!userDetails) {
             setShowLoginModal(true);
@@ -58,7 +62,9 @@ const Listing = () => {
                     </center>
                     <div className='payment-bar'>
                         <NervaBadge price_xnv={listing_details.price_xnv} />
-                        <button onClick={postAddToCartRequest}>Add to cart</button>
+                        <button onClick={postAddToCartRequest} disabled={!authChecked}>
+                            {authChecked ? 'Add to cart' : 'Checking login...'}
+                        </button>
                     </div>
                     <div className='detail-choices-bar'>
                         <h3 className='detail-choices-option-selected'>Product Details</h3>
