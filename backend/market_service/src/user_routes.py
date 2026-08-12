@@ -1,5 +1,6 @@
 import uuid
 import logging
+import nacl.pwhash.argon2id
 from pydantic import BaseModel
 from fastapi import APIRouter
 from fastapi import FastAPI, Request, Depends, HTTPException, Response, Cookie
@@ -9,6 +10,9 @@ from starlette.middleware.sessions import SessionMiddleware
 from .dependencies import get_db, get_sessions
 
 router = APIRouter()
+
+def hash_password(password:str):
+    return nacl.pwhash.argon2id.str(password.encode('utf-8')).decode('utf-8')
 
 # User Registration Routes
 class UserRegistrationSubmitRequest(BaseModel):
@@ -23,7 +27,7 @@ async def user_registration_submit(req: UserRegistrationSubmitRequest, rds_clien
             INSERT INTO users
             (username, email, password)
             VALUES (%s, %s, %s)
-            """, (req.username, req.email, req.password))
+            """, (req.username, req.email, hash_password(req.password)))
         await cur.execute("""
             INSERT INTO user_validation_tokens
             (token, username)
@@ -55,11 +59,15 @@ async def user_login(request:LoginRequest, response:Response, rds_client=Depends
     async with rds_client.cursor() as cur:
         await cur.execute("""
             SELECT * FROM users
-            WHERE (username, password) = (%s, %s)
-            AND status = 'active'
-            """, (request.username, request.password))
+            WHERE (username) = (%s)
+            """, (request.username))
         user_result_row = await cur.fetchone()
     if not user_result_row:
+        raise HTTPException(status_code=401)
+    # verify password is correct
+    try:
+        nacl.pwhash.argon2id.verify(user_result_row['password'].encode('utf-8'), request.password.encode('utf-8'))
+    except nacl.exceptions.InvalidkeyError:
         raise HTTPException(status_code=401)
     # add Redis entry {session_id:username} with 2 hour timeout
     session_id = session_storage.makeNewUserSession(request.username, is_vendor=user_result_row["is_vendor"])
