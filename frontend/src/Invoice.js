@@ -62,7 +62,7 @@ const Invoice = () => {
     }, [invoice_id]);
 
     useEffect(() => {
-        const socket = new WebSocket('ws://localhost:8765/'+invoice_id);
+        const socket = new WebSocket(process.env.REACT_APP_PAYMENTS_WEBSOCKET+'/'+invoice_id);
         socket.addEventListener('open', (event) => {
             console.log('Connected to WS Server');
         });
