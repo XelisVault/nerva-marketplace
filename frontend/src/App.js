@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -14,43 +14,15 @@ import Cart from './Cart.js'
 import Invoice from "./Invoice.js";
 import Listing from "./Listing.js"
 import VendorOrders from "./VendorOrders.js"
-import UserContext from './UserContext.js';
+import { UserProvider } from './UserContext.js';
 
 const Home = () => {
   return <ListingsDisplay/>
 }
 
 function App() {
-  const [userDetails, setUser] = useState(undefined);
-  const [authChecked, setAuthChecked] = useState(false);
-
-  useEffect(() => {
-    const getWhoami = async () => {
-      try {
-        const response = await fetch(process.env.REACT_APP_MARKET_MICROSERVICES + '/users/whoami', {
-          method: 'GET',
-          credentials: 'include'
-        });
-
-        if (response.status === 200) {
-          const userData = await response.json();
-          setUser(userData);
-        } else {
-          setUser(null);
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        setUser(null);
-      } finally {
-        setAuthChecked(true);
-      }
-    };
-
-    if (!authChecked) getWhoami();
-  }, [authChecked]);
-
   return (
-    <UserContext.Provider value={{ userDetails, authChecked }}>
+    <UserProvider>
       <Router>
           <Routes>
             <Route path="/register" element={<Registration />} />
@@ -65,7 +37,7 @@ function App() {
             <Route path="/" element={<Home />} />
           </Routes>
       </Router>
-    </UserContext.Provider>
+    </UserProvider>
   );
 }
 

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import UserContext from './UserContext.js';
 
 import './login.css'
 
@@ -8,6 +9,7 @@ const LoginCard = () => {
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
     const location = useLocation();
+    const { refetchUser } = useContext(UserContext);
     const returnTo = location.state && location.state.from ? location.state.from : '/listings';
 
     const postLoginRequest = async (username, password) => {
@@ -26,7 +28,9 @@ const LoginCard = () => {
         e.preventDefault();
         postLoginRequest(username, password).then(status => {
             if (status === 200) {
-              navigate(returnTo);
+              refetchUser().then(() => {
+                navigate(returnTo);
+              });
             } else {
               console.log('Login failed with status:', status);
             }
