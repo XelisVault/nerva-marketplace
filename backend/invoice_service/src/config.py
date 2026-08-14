@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     RABBITMQ_PASS: str = Field("passwordkkjhgq", env="RABBITMQ_PASS")
 
     WEBSOCKET_HOST: str = Field("0.0.0.0", env="WEBSOCKET_HOST")
-    WEBSOCKET_PORT: int = Field(8765, env="WEBSOCKET_PORT")
+    WEBSOCKET_PORT: int = Field(2052, env="WEBSOCKET_PORT")
 
     CORS_ORIGINS: List[str] = Field(
         default_factory=lambda: [

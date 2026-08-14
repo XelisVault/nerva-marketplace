@@ -28,14 +28,14 @@ services:
     volumes:
       - ../:/app
     ports:
-      - 8002:8002
+      - 8880:8880
 
   payments_websocket_server: # Websocket Server for Payments Microservices
     build:
       context: ..
       dockerfile: infrastructure/Dockerfile.websockets
     ports:
-      - 8765:8765
+      - 2052:2052
 
 volumes:
   db_invoice_data:

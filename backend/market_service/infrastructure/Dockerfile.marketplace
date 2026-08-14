@@ -7,10 +7,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 ENV DB_HOST="db"
 ENV CACHE_HOST="redis"
-ENV PAYMENTS_BASE_URL="http://payments_rest_microservices:8002"
-ENV MARKET_SERVICE_BASE_URL="http://127.0.0.1:8001"
+ENV PAYMENTS_BASE_URL="http://payments_rest_microservices:8880"
+ENV MARKET_SERVICE_BASE_URL="http://127.0.0.1:8080"
 COPY ./src/config.py .
 
-EXPOSE 8001
+EXPOSE 8080
 
-CMD python3 -m uvicorn src.http_server:app --reload --host 0.0.0.0 --port 8001
+CMD python3 -m uvicorn src.http_server:app --reload --host 0.0.0.0 --port 8080

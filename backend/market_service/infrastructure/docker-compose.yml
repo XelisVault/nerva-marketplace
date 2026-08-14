@@ -24,7 +24,7 @@ services:
     volumes:
       - ../:/app
     ports:
-      - 8001:8001
+      - 8080:8080
 
 volumes:
   db_market_data:

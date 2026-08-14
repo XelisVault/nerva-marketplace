@@ -7,6 +7,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 ENV DB_HOST="db"
 
-EXPOSE 8765
+EXPOSE 2052
 
 CMD ["python3", "-u", "src/websocket_server.py"]
