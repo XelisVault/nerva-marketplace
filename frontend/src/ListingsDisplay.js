@@ -25,13 +25,13 @@ const ListingsDisplay = () => {
             <NavBar />
             <div className="item-container">
                 {items.map(item => (
-                    <ItemCard
+                    item.quantity_available > 0 ? <ItemCard
                         key={item.listing_id}
                         listing_id={item.listing_id}
                         title={item.title}
                         imageName={item.image_name}
                         price_xnv={item.price_xnv}
-                    />
+                    /> : <></>
                 ))}
             </div>
         </div>
