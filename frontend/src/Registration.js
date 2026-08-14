@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './login.css'
 
 const RegistrationForm = () => {
@@ -6,6 +7,7 @@ const RegistrationForm = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [password_confirm, setPasswordConfirm] = useState('');
+    const navigate = useNavigate();
      
     const postRegistrationRequest = async (username, password, email) => {
         console.log(username);
@@ -27,6 +29,7 @@ const RegistrationForm = () => {
         }
         postRegistrationRequest(username, password, email).then(data => {
             console.log(data);
+            navigate('/login');
         }).catch(error => {
             console.error('Error:', error);
         });
