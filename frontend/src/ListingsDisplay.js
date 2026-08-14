@@ -31,6 +31,7 @@ const ListingsDisplay = () => {
                         title={item.title}
                         imageName={item.image_name}
                         price_xnv={item.price_xnv}
+                        qnty={item.quantity_available}
                     /> : <></>
                 ))}
             </div>
