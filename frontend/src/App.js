@@ -14,6 +14,7 @@ import Cart from './Cart.js'
 import Invoice from "./Invoice.js";
 import Listing from "./Listing.js"
 import VendorOrders from "./VendorOrders.js"
+import CustomerOrders from "./CustomerOrders.js"
 import { UserProvider } from './UserContext.js';
 
 const Home = () => {
@@ -34,6 +35,7 @@ function App() {
             <Route path="/cart" element={<Cart/>} />
             <Route path="/invoice/:invoice_id" element={<Invoice/>} />
             <Route path="/vendor/orders" element={<VendorOrders/>} />
+            <Route path="/customer/orders" element={<CustomerOrders/>} />
             <Route path="/" element={<Home />} />
           </Routes>
       </Router>
