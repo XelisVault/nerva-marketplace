@@ -55,14 +55,17 @@ const CustomerOrders = () => {
             <h1>Your Orders</h1>
             <div className="orders-list">
                 {orders.map((order, index) => {
-                    const statusClass = `status-${String(order.status || '').toLowerCase().replace(/\s+/g, '-')}`;
+                    const statusClass = `status-${String(order.invoice_status || '').toLowerCase().replace(/\s+/g, '-')}`;
 
                     return (
                         <span key={`${order.order_id}-${index}`} className="order-item">
                             <span className="order-id">Order ID: {order.order_id}</span>
                             <span className="order-date">Date: {order.create_time}</span>
                             <span className={`order-status ${statusClass}`}>
-                                Status: {order.status}
+                                Invoice Status: {order.invoice_status}
+                            </span>
+                            <span className={`order-status ${statusClass}`}>
+                                Shipping Status: {order.shipping_status}
                             </span>
                         </span>
                     );

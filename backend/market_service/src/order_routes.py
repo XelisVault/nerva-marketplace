@@ -50,8 +50,10 @@ async def get_customer_orders(session_id:str=Cookie(None), session_storage=Depen
             buyer_orders = await cur.fetchall()
             result = []
             for order in buyer_orders:
-                order['status'] = 'awaiting vendor'
+                order_invoice_details = requests.get(f"{settings.PAYMENTS_BASE_URL}/invoice/{order['invoice_id']}")
+                order['invoice_status'] = order_invoice_details.json()['status']
                 order['create_time'] = order['create_time'].strftime("%Y-%m-%d %H:%M:%S")
+                order['shipping_status'] = "Awaiting Vendor"
                 print(order)
                 result.append({ "order_id": order['order_id'], "create_time": order['create_time'], "status": order['status'] })
     return result
