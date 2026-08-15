@@ -1,0 +1,5 @@
+This application collects some data in part by necessity and in some cases to improve the user experience.
+
+1. IP addresses. IP addresses are included in every request on the internet and may be logged on the backend for debugging purposes and may be stored for the purpose of defending against DDOS attacks.
+
+2. Emails addresses and email communication. If there is a problem with your order then I will use the email address which was provided during the registration process to contact you.

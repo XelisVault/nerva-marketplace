@@ -25,19 +25,40 @@ function App() {
   return (
     <UserProvider>
       <Router>
-          <Routes>
-            <Route path="/register" element={<Registration />} />
-            <Route path="activate/:token" element={<UserActivationPage />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/create_listing" element={<ListingCreateForm/>} />
-            <Route path="/listings" element={<ListingsDisplay/>} />
-            <Route path="/listing/:listing_id" element={<Listing/>} />
-            <Route path="/cart" element={<Cart/>} />
-            <Route path="/invoice/:invoice_id" element={<Invoice/>} />
-            <Route path="/vendor/orders" element={<VendorOrders/>} />
-            <Route path="/customer/orders" element={<CustomerOrders/>} />
-            <Route path="/" element={<Home />} />
-          </Routes>
+        <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ flex: 1 }}>
+            <Routes>
+              <Route path="/register" element={<Registration />} />
+              <Route path="activate/:token" element={<UserActivationPage />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/create_listing" element={<ListingCreateForm/>} />
+              <Route path="/listings" element={<ListingsDisplay/>} />
+              <Route path="/listing/:listing_id" element={<Listing/>} />
+              <Route path="/cart" element={<Cart/>} />
+              <Route path="/invoice/:invoice_id" element={<Invoice/>} />
+              <Route path="/vendor/orders" element={<VendorOrders/>} />
+              <Route path="/customer/orders" element={<CustomerOrders/>} />
+              <Route path="/" element={<Home />} />
+            </Routes>
+          </div>
+
+          <footer style={{
+            textAlign: 'center',
+            padding: '1rem',
+            borderTop: '1px solid #e5e7eb',
+            color: '#4b5563',
+            fontSize: '0.95rem'
+          }}>
+            <a
+              href="/privacy_policy.txt"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: '#2563eb', textDecoration: 'underline' }}
+            >
+              Privacy Policy
+            </a>
+          </footer>
+        </div>
       </Router>
     </UserProvider>
   );
