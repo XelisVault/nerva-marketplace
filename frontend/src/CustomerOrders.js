@@ -56,6 +56,7 @@ const CustomerOrders = () => {
             <div className="orders-list">
                 {orders.map((order, index) => {
                     const statusClass = `status-${String(order.invoice_status || '').toLowerCase().replace(/\s+/g, '-')}`;
+                    const shippingStatusClass = `status-${String(order.shipping_status || '').toLowerCase().replace(/\s+/g, '-')}`;
 
                     return (
                         <span key={`${order.order_id}-${index}`} className="order-item">
@@ -64,7 +65,7 @@ const CustomerOrders = () => {
                             <span className={`order-status ${statusClass}`}>
                                 Invoice Status: {order.invoice_status}
                             </span>
-                            <span className={`order-status ${statusClass}`}>
+                            <span className={`order-status ${shippingStatusClass}`}>
                                 Shipping Status: {order.shipping_status}
                             </span>
                         </span>
