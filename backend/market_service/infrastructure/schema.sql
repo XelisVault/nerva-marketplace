@@ -50,5 +50,6 @@ DROP TABLE IF EXISTS `order_shipping`;
 CREATE TABLE order_shipping (
     id INT PRIMARY KEY AUTO_INCREMENT,
     order_id INT NOT NULL,
-    shipping_note TEXT NOT NULL
+    shipping_note TEXT NOT NULL,
+    shipping_status enum('pending', 'shipped') DEFAULT 'pending'
 );
