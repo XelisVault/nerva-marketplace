@@ -88,5 +88,5 @@ async def checkout(session_id:str=Cookie(None), session_storage=Depends(get_sess
             await cur.execute("INSERT INTO order_items (order_id, item_listing_id) VALUES (%s,%s)", (order_id, order_item))
         await cur.execute("INSERT INTO order_shipping (order_id, shipping_note) VALUES (%s, %s)", (order_id, shipping_data))
         # decrement the quantity available
-        # await cur.execute("UPDATE listings quantity_available=0 WHERE listing_id IN (SELECT item_listing_id as listing_id FROM order_items WHERE order_id=%s)", (order_id))
+        await cur.execute("UPDATE listings SET quantity_available=quantity_available-1 WHERE listing_id IN (SELECT item_listing_id as listing_id FROM order_items WHERE order_id=%s)", (order_id))
     return invoice_create_response.json()
