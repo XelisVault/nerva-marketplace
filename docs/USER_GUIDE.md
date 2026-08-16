@@ -44,9 +44,10 @@ were trying to go before being prompted to sign in).
 ### Logout
 
 The navigation drawer shows a **Logout** button when you are signed in.
-Note: this button is currently not wired up to anything. See issue #1 on
-the issue tracker. To log out for now, you can clear the `session_id`
-cookie from your browser devtools.
+Clicking it calls the backend's `/users/logout` endpoint, which deletes
+your session from Redis and clears the `session_id` cookie. The page
+then refreshes the user context and sends you back to the homepage, so
+the UI immediately reflects the signed-out state.
 
 ## Browsing
 
