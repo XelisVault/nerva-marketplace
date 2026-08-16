@@ -163,12 +163,11 @@ that has to be done directly in the database for now.
 3. Choose an image file (the backend accepts jpg, jpeg, png).
 4. Click **Submit**.
 
-The listing is sent to the backend as multipart form data. If the upload
-succeeds, the listing is created in the database and becomes visible on
-the marketplace.
-
-One caveat: there is currently no visual feedback on the frontend when
-the submission completes. The button does not change, no message
-appears, and the page does not redirect. See issue #3. You can verify
-the listing was created by going back to the homepage or checking the
-database.
+The listing is sent to the backend as multipart form data. While the
+request is in flight the submit button is disabled and reads
+"Submitting...". When the backend responds, a modal pops up with either
+a success message or an error message explaining what went wrong (for
+example, "File too big" or "Invalid file extension"). On success,
+clicking **Continue** takes you to the listings page. On error, clicking
+**Try again** dismisses the modal so you can fix the inputs and
+resubmit.
