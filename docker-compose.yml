@@ -1,0 +1,203 @@
+# ============================================================
+# NERVA Marketplace — Unified Docker Compose
+#
+# Brings up the entire backend stack (2 MySQL DBs + Redis + RabbitMQ +
+# 3 Python services + NERVA wallet RPC) with one command.
+#
+# Usage:
+#   1. cp .env.example .env  &&  edit .env
+#   2. ./backend/create_bridge_network.sh
+#   3. docker compose up --build
+# ============================================================
+
+services:
+  # ---------- Market service dependencies ----------
+  db:
+    build:
+      context: ../backend/market_service/infrastructure
+      dockerfile: Dockerfile.db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASS:?DB_PASS is required}
+      MYSQL_DATABASE: ${DB_NAME:-market}
+    volumes:
+      - db_market_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p", "${DB_PASS}"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --requirepass ${CACHE_PASS:?CACHE_PASS is required} --maxmemory 256mb --maxmemory-policy allkeys-lru
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${CACHE_PASS}", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  marketplace_rest_microservices:
+    build:
+      context: ../backend/market_service
+      dockerfile: infrastructure/Dockerfile.marketplace
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASS: ${DB_PASS}
+      DB_NAME: ${DB_NAME:-market}
+      CACHE_HOST: redis
+      CACHE_PASS: ${CACHE_PASS}
+      PAYMENTS_BASE_URL: http://payments_rest_microservices:8880
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
+      SESSION_SECURE: ${SESSION_SECURE:-false}
+      SESSION_SAMESITE: ${SESSION_SAMESITE:-lax}
+      RATE_LIMIT_LOGIN_PER_MIN: ${RATE_LIMIT_LOGIN_PER_MIN:-10}
+      RATE_LIMIT_REGISTER_PER_MIN: ${RATE_LIMIT_REGISTER_PER_MIN:-5}
+      RATE_LIMIT_CREATE_LISTING_PER_MIN: ${RATE_LIMIT_CREATE_LISTING_PER_MIN:-10}
+    volumes:
+      - ../backend/market_service:/app
+      - listing_images:/app/listing_image_storage
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+
+  # ---------- Invoice service dependencies ----------
+  db_invoice:
+    build:
+      context: ../backend/invoice_service/infrastructure
+      dockerfile: Dockerfile.db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${INV_DB_PASS:?INV_DB_PASS is required}
+      MYSQL_DATABASE: ${INV_DB_NAME:-invoices_db}
+    volumes:
+      - db_invoice_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p", "${INV_DB_PASS}"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-nerva_market}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS:?RABBITMQ_PASS is required}
+    ports:
+      - "5672:5672"
+      - "15672:15672"  # management UI
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+
+  nerva:
+    build:
+      context: ../backend/invoice_service
+      dockerfile: infrastructure/Dockerfile.nerva
+    environment:
+      DB_HOST: db_invoice
+      DB_USER: root
+      DB_PASS: ${INV_DB_PASS}
+      DB_NAME: ${INV_DB_NAME:-invoices_db}
+      WALLET_RPC_HOST: 127.0.0.1
+      WALLET_RPC_PORT: 28082
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: ${RABBITMQ_USER:-nerva_market}
+      RABBITMQ_PASS: ${RABBITMQ_PASS}
+      REQUIRED_CONFIRMATIONS: ${REQUIRED_CONFIRMATIONS:-1}
+    volumes:
+      - nerva_wallet:/app/keys
+    ports:
+      - "28082:28082"
+    depends_on:
+      db_invoice:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+
+  payments_rest_microservices:
+    build:
+      context: ../backend/invoice_service
+      dockerfile: infrastructure/Dockerfile.payments
+    environment:
+      DB_HOST: db_invoice
+      DB_USER: root
+      DB_PASS: ${INV_DB_PASS}
+      DB_NAME: ${INV_DB_NAME:-invoices_db}
+      WALLET_RPC_HOST: nerva
+      WALLET_RPC_PORT: 28082
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
+    volumes:
+      - ../backend/invoice_service:/app
+    ports:
+      - "8880:8880"
+    depends_on:
+      db_invoice:
+        condition: service_healthy
+      nerva:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8880/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+
+  payments_websocket_server:
+    build:
+      context: ../backend/invoice_service
+      dockerfile: infrastructure/Dockerfile.websockets
+    environment:
+      DB_HOST: db_invoice
+      DB_USER: root
+      DB_PASS: ${INV_DB_PASS}
+      DB_NAME: ${INV_DB_NAME:-invoices_db}
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: ${RABBITMQ_USER:-nerva_market}
+      RABBITMQ_PASS: ${RABBITMQ_PASS}
+      WEBSOCKET_HOST: 0.0.0.0
+      WEBSOCKET_PORT: 2052
+    ports:
+      - "2052:2052"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  db_market_data:
+  db_invoice_data:
+  listing_images:
+  nerva_wallet:
+
+networks:
+  default:
+    name: mystery_network
+    external: true

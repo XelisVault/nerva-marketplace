@@ -1,0 +1,26 @@
+FROM --platform=linux/amd64 python:3.11-slim
+
+WORKDIR /app
+
+# System deps for image validation (imghdr is stdlib but Pillow is not —
+# we don't actually need Pillow; keep the image small).
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+ && rm -rf /var/lib/apt/lists/*
+
+COPY ./requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY ./src ./src
+COPY ./infrastructure/schema.sql ./infrastructure/schema.sql
+
+# Image upload storage (created at runtime via ListingStorage.__init__,
+# but we also create it here so it's owned by the right user).
+RUN mkdir -p /app/listing_image_storage
+
+EXPOSE 8080
+
+# Run with multiple workers + no reload in production.
+CMD ["python3", "-m", "uvicorn", "src.http_server:app", \
+     "--host", "0.0.0.0", "--port", "8080", \
+     "--workers", "2", "--proxy-headers"]

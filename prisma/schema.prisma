@@ -1,0 +1,96 @@
+// NERVA Marketplace — Prisma schema (SQLite for local dev / preview mode).
+// In production the Python backend uses MySQL; this schema mirrors that data
+// model 1:1 so the Next.js preview can run end-to-end without external services.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  username   String   @id
+  email      String   @unique
+  password   String
+  status     String   @default("unverified") // unverified | active | deactivated
+  isVendor   Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  listings       Listing[]
+  ordersAsVendor Order[]   @relation("VendorOrders")
+  ordersAsBuyer  Order[]   @relation("BuyerOrders")
+  tokens         ActivationToken[]
+}
+
+model ActivationToken {
+  token      String   @id
+  username   String
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [username], references: [username], onDelete: Cascade)
+
+  @@index([username])
+}
+
+model Listing {
+  listingId         Int      @id @default(autoincrement())
+  vendor            String
+  title             String
+  description       String
+  imageName         String
+  priceXnv          Float
+  quantityAvailable Int      @default(1)
+  createdAt         DateTime @default(now())
+
+  vendorUser User   @relation(fields: [vendor], references: [username], onDelete: Cascade)
+  orderItems OrderItem[]
+
+  @@index([vendor])
+}
+
+model Order {
+  orderId    Int      @id @default(autoincrement())
+  vendor     String
+  buyer      String
+  invoiceId  Int
+  createdAt  DateTime @default(now())
+
+  vendorUser User        @relation("VendorOrders", fields: [vendor], references: [username], onDelete: Cascade)
+  buyerUser  User        @relation("BuyerOrders", fields: [buyer], references: [username], onDelete: Cascade)
+  items      OrderItem[]
+  shipping   OrderShipping?
+
+  @@index([vendor])
+  @@index([buyer])
+}
+
+model OrderItem {
+  orderItemId   Int @id @default(autoincrement())
+  orderId       Int
+  itemListingId Int
+
+  order   Order   @relation(fields: [orderId], references: [orderId], onDelete: Cascade)
+  listing Listing @relation(fields: [itemListingId], references: [listingId], onDelete: Restrict)
+
+  @@index([orderId])
+}
+
+model OrderShipping {
+  id             Int      @id @default(autoincrement())
+  orderId        Int      @unique
+  shippingNote   String
+  shippingStatus String   @default("pending") // pending | shipped
+
+  order Order @relation(fields: [orderId], references: [orderId], onDelete: Cascade)
+}
+
+model Invoice {
+  invoiceId  Int      @id @default(autoincrement())
+  amount     Float
+  address    String   @unique
+  status     String   @default("pending") // pending | confirmed
+  createdAt  DateTime @default(now())
+}

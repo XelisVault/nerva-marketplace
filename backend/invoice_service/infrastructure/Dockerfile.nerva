@@ -1,0 +1,36 @@
+FROM --platform=linux/amd64 python:3.11-slim
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc curl bzip2 \
+ && rm -rf /var/lib/apt/lists/*
+
+# NERVA wallet
+RUN curl -fL -O https://github.com/nerva-project/nerva/releases/download/v0.3.0.0/nerva-linux-x86_64-v0.3.0.0.tar.bz2 \
+ && tar -xf nerva-linux-x86_64-v0.3.0.0.tar.bz2 \
+ && rm nerva-linux-x86_64-v0.3.0.0.tar.bz2
+
+# Application code
+COPY ./requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY ./src/process_new_tx.py ./process_new_tx.py
+COPY ./src/dependencies.py ./dependencies.py
+COPY ./src/config.py ./config.py
+COPY ./keys ./keys
+
+# Expose the wallet RPC port (used internally by the other services).
+EXPOSE 28082
+
+# Run nerva-wallet-rpc and tell it to invoke our process_new_tx.py
+# whenever a transaction is detected (--tx-notify).
+CMD ["nerva-linux-x86_64-v0.3.0.0/nerva-wallet-rpc", \
+     "--wallet-file", "mainnet_rpc", \
+     "--password", "rpc", \
+     "--rpc-bind-ip", "0.0.0.0", \
+     "--confirm-external-bind", \
+     "--rpc-bind-port", "28082", \
+     "--daemon-address", "daemon.getnerva.org:17566", \
+     "--log-level", "2", \
+     "--disable-rpc-login", \
+     "--tx-notify", "python3 /app/process_new_tx.py %s"]

@@ -1,0 +1,19 @@
+FROM --platform=linux/amd64 python:3.11-slim
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc curl \
+ && rm -rf /var/lib/apt/lists/*
+
+COPY ./requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY ./src ./src
+COPY ./infrastructure/schema.sql ./infrastructure/schema.sql
+
+EXPOSE 8880
+
+CMD ["python3", "-m", "uvicorn", "src.http_server:app", \
+     "--host", "0.0.0.0", "--port", "8880", \
+     "--workers", "2", "--proxy-headers"]
