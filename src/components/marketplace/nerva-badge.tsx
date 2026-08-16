@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Coins } from "@/components/icons";
 
 interface NervaBadgeProps {
   price: number;
@@ -31,12 +30,16 @@ export function NervaBadge({ price, className, size = "md" }: NervaBadgeProps) {
   return (
     <span
       className={cn(
-        "bg-accent/60 text-accent-foreground inline-flex items-center rounded-full font-semibold",
+        "inline-flex items-center rounded-full bg-accent font-semibold text-accent-foreground",
         sizeClasses[size],
         className,
       )}
     >
-      <Coins className={cn(iconSize[size], "text-primary")} />
+      <img
+        src="/nerva-coin-logo.png"
+        alt=""
+        className={cn(iconSize[size], "object-contain")}
+      />
       {formatXnv(price)} XNV
     </span>
   );

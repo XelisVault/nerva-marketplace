@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getStore } from "@/lib/mock-store";
+import { db } from "@/lib/mock-store";
 import { getSessionUsername } from "@/lib/mock-session";
 
 /** GET /api/market/vendor/orders */
@@ -11,13 +11,22 @@ export async function GET() {
       { status: 401 },
     );
   }
-  const store = getStore();
-  return NextResponse.json(
-    store.orders.map((o) => ({
-      order_id: o.order_id,
-      create_time: o.create_time,
-      amount: o.amount,
-      status: o.invoice_status,
-    })),
-  );
+  const orders = await db.order.findMany({
+    where: { vendor: username },
+    orderBy: { createdAt: "desc" },
+  });
+
+  const result = [];
+  for (const order of orders) {
+    const invoice = await db.invoice.findUnique({
+      where: { invoiceId: order.invoiceId },
+    });
+    result.push({
+      order_id: order.orderId,
+      create_time: order.createdAt.toISOString(),
+      amount: invoice?.amount ?? 0,
+      status: invoice?.status ?? "pending",
+    });
+  }
+  return NextResponse.json(result);
 }

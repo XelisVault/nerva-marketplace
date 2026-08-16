@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { QueryProvider } from "@/components/query-provider";
@@ -9,44 +8,15 @@ import { Footer } from "@/components/layout/footer";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "@/components/ui/sonner";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
   title: {
-    default: "NERVA Marketplace — Buy & sell with XNV",
-    template: "%s · NERVA Marketplace",
+    default: "NERVA Marketplace",
+    template: "%s - NERVA Marketplace",
   },
   description:
-    "A community-driven marketplace where physical goods are priced in NERVA (XNV), the CPU-minable privacy coin. Browse listings, pay with XNV, track invoices in real time.",
-  keywords: [
-    "NERVA",
-    "XNV",
-    "cryptocurrency",
-    "marketplace",
-    "privacy coin",
-    "Monero fork",
-    "CPU mining",
-  ],
-  authors: [{ name: "NERVA Marketplace Contributors" }],
-  openGraph: {
-    title: "NERVA Marketplace",
-    description:
-      "Buy and sell physical goods priced in NERVA (XNV). CPU-minable privacy coin.",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "NERVA Marketplace",
-    description:
-      "Buy and sell physical goods priced in NERVA (XNV). CPU-minable privacy coin.",
+    "Buy and sell goods with NERVA (XNV). A community marketplace for the CPU-minable privacy coin.",
+  icons: {
+    icon: "/nerva-favicon.png",
   },
 };
 
@@ -57,9 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className="antialiased">
         <ThemeProvider>
           <QueryProvider>
             <AuthProvider>

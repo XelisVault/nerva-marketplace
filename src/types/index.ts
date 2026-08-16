@@ -1,8 +1,6 @@
 /**
  * NERVA Marketplace — Shared TypeScript types.
- * These types mirror the Python backend's Pydantic models and DB schema
- * (see backend/market_service/infrastructure/schema.sql and
- *  backend/invoice_service/infrastructure/schema.sql).
+ * These types mirror the Python backend's Pydantic models and DB schema.
  */
 
 export type UserStatus = "unverified" | "active" | "deactivated";
@@ -22,6 +20,8 @@ export interface Listing {
   image_name: string;
   price_xnv: number;
   quantity_available: number;
+  /** The vendor's NERVA payment address (NV/NS/Niz prefix). */
+  payment_address?: string;
   create_time?: string;
 }
 
@@ -32,6 +32,7 @@ export interface CartItem {
   price_xnv: number;
   quantity_available: number;
   vendor: string;
+  payment_address?: string;
 }
 
 export interface Cart {

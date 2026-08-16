@@ -2,152 +2,95 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { NERVA_INFO } from "@/lib/config";
-import {
-  ArrowRight,
-  Cpu,
-  ExternalLink,
-  Github,
-  Lock,
-  Shield,
-  Sparkles,
-} from "@/components/icons";
 
 export const metadata: Metadata = {
   title: "About NERVA",
-  description: `Learn about ${NERVA_INFO.name} (${NERVA_INFO.ticker}) — the CPU-minable privacy coin that powers this marketplace.`,
+  description: "Learn about NERVA (XNV), the CPU-minable privacy coin.",
 };
 
 export default function AboutPage() {
   return (
-    <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
-      <div className="text-center">
-        <div className="bg-brand-gradient text-primary-foreground mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl text-2xl font-bold">
-          N
-        </div>
-        <h1 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
-          About NERVA
-        </h1>
-        <p className="text-muted-foreground mx-auto mt-3 max-w-2xl text-sm sm:text-base">
-          {NERVA_INFO.description}
-        </p>
+    <div className="mx-auto max-w-2xl px-4 py-8">
+      <div className="mb-6 flex items-center gap-3">
+        <img
+          src="/nerva-coin-logo.png"
+          alt="NERVA"
+          className="h-12 w-12"
+        />
+        <h1 className="text-2xl font-bold">About NERVA</h1>
       </div>
 
-      <div className="mt-10 grid gap-4 sm:grid-cols-2">
-        <Card>
-          <CardContent className="space-y-2 p-5">
-            <div className="bg-accent text-accent-foreground inline-flex h-9 w-9 items-center justify-center rounded-lg">
-              <Cpu className="h-5 w-5" />
-            </div>
-            <h2 className="text-foreground text-base font-semibold">
-              CPU-minable
-            </h2>
-            <p className="text-muted-foreground text-sm">
-              NERVA uses Cryptonight Adaptive (v3) — a variant deliberately
-              tuned to be GPU- and ASIC-resistant. The network is secured
-              by solo CPU miners only: there are no pools, no farms, just
-              ordinary computers.
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="space-y-2 p-5">
-            <div className="bg-accent text-accent-foreground inline-flex h-9 w-9 items-center justify-center rounded-lg">
-              <Lock className="h-5 w-5" />
-            </div>
-            <h2 className="text-foreground text-base font-semibold">
-              Privacy by default
-            </h2>
-            <p className="text-muted-foreground text-sm">
-              Built as a Monero/Masari fork, NERVA inherits Cryptonote +
-              RingCT: sender, recipient, and amount are hidden on every
-              transaction. Coins are untraceable, unlinkable, and fungible.
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="space-y-2 p-5">
-            <div className="bg-accent text-accent-foreground inline-flex h-9 w-9 items-center justify-center rounded-lg">
-              <Shield className="h-5 w-5" />
-            </div>
-            <h2 className="text-foreground text-base font-semibold">
-              Fair launch
-            </h2>
-            <p className="text-muted-foreground text-sm">
-              No ICO, no pre-sale, no developer tax. A small pre-mine of
-              180,000 XNV (~0.97% of supply) was used for infrastructure
-              and listing costs. Total supply is ~18.5 million with a 1%
-              annual tail emission.
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="space-y-2 p-5">
-            <div className="bg-accent text-accent-foreground inline-flex h-9 w-9 items-center justify-center rounded-lg">
-              <Sparkles className="h-5 w-5" />
-            </div>
-            <h2 className="text-foreground text-base font-semibold">
-              Fast &amp; low-fee
-            </h2>
-            <p className="text-muted-foreground text-sm">
-              1-minute block time and sub-cent transaction fees make NERVA
-              practical for everyday payments — including marketplace
-              purchases of physical goods.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Card className="mt-6">
-        <CardContent className="p-6">
-          <h2 className="text-foreground text-lg font-semibold">
-            The name &quot;NERVA&quot;
-          </h2>
-          <p className="text-muted-foreground mt-2 text-sm">
-            NERVA is named after NASA&apos;s 1950s–60s Nuclear Engine for
-            Rocket Vehicle Application project — a nuclear-thermal rocket
-            program that pioneered compact, efficient space propulsion. The
-            coin honours that spirit of ambitious, ground-up engineering.
+      <Card className="mb-4">
+        <CardContent className="space-y-3 p-4 text-sm leading-relaxed">
+          <p>
+            <strong>NERVA (XNV)</strong> is a privacy-focused cryptocurrency that
+            can only be mined with a CPU. It is a fork of Monero and uses the
+            Cryptonight Adaptive proof-of-work algorithm, which is designed to
+            resist GPU and ASIC mining.
+          </p>
+          <p className="text-muted-foreground">
+            Unlike most cryptocurrencies, NERVA does not support pool mining.
+            Every miner runs a full node. This means one CPU equals one vote,
+            making the network more decentralized and resistant to censorship.
           </p>
         </CardContent>
       </Card>
 
-      <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
-        <Button asChild size="lg">
+      <div className="grid grid-cols-2 gap-3">
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-2xl font-bold">XNV</div>
+            <div className="text-xs text-muted-foreground">Ticker</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-2xl font-bold">60s</div>
+            <div className="text-xs text-muted-foreground">Block time</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-2xl font-bold">18.5M</div>
+            <div className="text-xs text-muted-foreground">Total supply</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-2xl font-bold">CPU</div>
+            <div className="text-xs text-muted-foreground">Mining</div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="mt-6 flex flex-col gap-2 sm:flex-row">
+        <Button asChild>
           <a
-            href={NERVA_INFO.website}
+            href="https://getnerva.org"
             target="_blank"
             rel="noopener noreferrer"
           >
             Visit getnerva.org
-            <ExternalLink className="ml-2 h-4 w-4" />
           </a>
         </Button>
-        <Button asChild size="lg" variant="outline">
-          <Link href="/listings">
-            Browse marketplace
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Link>
-        </Button>
-        <Button asChild size="lg" variant="ghost">
+        <Button asChild variant="outline">
           <a
-            href="https://github.com/XelisVault/nerva-marketplace"
+            href="https://github.com/nerva-project/nerva"
             target="_blank"
             rel="noopener noreferrer"
           >
-            <Github className="mr-2 h-4 w-4" />
-            Source code
+            View on GitHub
           </a>
+        </Button>
+        <Button asChild variant="ghost">
+          <Link href="/listings">Browse marketplace</Link>
         </Button>
       </div>
 
-      <div className="text-muted-foreground mt-10 text-center text-xs">
-        NERVA Marketplace is an independent community project and is not
-        affiliated with the official NERVA core development team.
-      </div>
+      <p className="mt-6 text-center text-xs text-muted-foreground">
+        NERVA Marketplace is an independent community project, not affiliated
+        with the official NERVA core project.
+      </p>
     </div>
   );
 }

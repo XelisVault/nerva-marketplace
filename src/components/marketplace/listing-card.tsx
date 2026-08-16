@@ -4,10 +4,10 @@ import Link from "next/link";
 import { memo } from "react";
 import type { Listing } from "@/types";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { NervaBadge, formatXnv } from "./nerva-badge";
+import { NervaBadge } from "./nerva-badge";
 import { ImageWithFallback } from "./image-with-fallback";
 import { listingImageUrl } from "@/lib/config";
-import { Package } from "@/components/icons";
+import { Package } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ListingCardProps {
@@ -22,23 +22,22 @@ function ListingCardImpl({ listing, priority }: ListingCardProps) {
     <Link
       href={`/listing/${listing.listing_id}`}
       className="group block h-full"
-      aria-label={`View ${listing.title}`}
     >
       <Card
         className={cn(
-          "h-full overflow-hidden py-0 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md",
+          "h-full overflow-hidden py-0 transition-shadow hover:shadow-md",
           soldOut && "opacity-60",
         )}
       >
-        <div className="bg-muted/30 relative aspect-[4/3] overflow-hidden">
+        <div className="relative aspect-[4/3] overflow-hidden bg-muted/30">
           <ImageWithFallback
             src={listingImageUrl(listing.image_name)}
             alt={listing.title}
             priority={priority}
           />
           {soldOut && (
-            <div className="absolute inset-0 bg-background/60 flex items-center justify-center">
-              <span className="bg-destructive text-destructive-foreground rounded-full px-3 py-1 text-xs font-semibold">
+            <div className="absolute inset-0 flex items-center justify-center bg-background/60">
+              <span className="rounded-full bg-destructive px-3 py-1 text-xs font-semibold text-destructive-foreground">
                 Sold out
               </span>
             </div>
@@ -48,30 +47,20 @@ function ListingCardImpl({ listing, priority }: ListingCardProps) {
           </div>
         </div>
 
-        <CardContent className="p-4">
-          <h3 className="text-foreground line-clamp-2 min-h-[2.75rem] text-sm font-semibold leading-tight">
+        <CardContent className="p-3">
+          <h3 className="line-clamp-2 min-h-[2.5rem] text-sm font-semibold leading-tight">
             {listing.title}
           </h3>
-          <p className="text-muted-foreground mt-1.5 line-clamp-2 text-xs">
-            {listing.description}
-          </p>
         </CardContent>
 
-        <CardFooter className="border-t px-4 py-2.5">
-          <div className="flex w-full items-center justify-between text-xs">
-            <span className="text-muted-foreground inline-flex items-center gap-1">
+        <CardFooter className="border-t px-3 py-2">
+          <div className="flex w-full items-center justify-between text-xs text-muted-foreground">
+            <span className="inline-flex items-center gap-1">
               <Package className="h-3 w-3" />
               {listing.vendor}
             </span>
-            <span
-              className={cn(
-                "font-medium",
-                soldOut
-                  ? "text-muted-foreground"
-                  : "text-foreground",
-              )}
-            >
-              {soldOut ? "—" : `${listing.quantity_available} in stock`}
+            <span className={cn("font-medium", soldOut ? "text-muted-foreground" : "text-foreground")}>
+              {soldOut ? "-" : `${listing.quantity_available} in stock`}
             </span>
           </div>
         </CardFooter>

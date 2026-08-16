@@ -149,10 +149,11 @@ async def checkout(
     # Compute total and validate every item.
     cart_total = 0.0
     vendor_username = None
+    vendor_payment_address = None
     async with sql_client.cursor() as cur:
         for item_id in cart["items"]:
             await cur.execute(
-                "SELECT vendor, price_xnv, quantity_available FROM listings WHERE listing_id = %s",
+                "SELECT vendor, price_xnv, quantity_available, payment_address FROM listings WHERE listing_id = %s",
                 (item_id,),
             )
             listing = await cur.fetchone()
@@ -175,17 +176,26 @@ async def checkout(
             # All items in a single order must come from the same vendor.
             if not vendor_username:
                 vendor_username = listing["vendor"]
+                vendor_payment_address = listing["payment_address"]
             elif vendor_username != listing["vendor"]:
                 raise HTTPException(
                     status_code=422,
                     detail="All items in a cart must be from the same vendor.",
                 )
 
+    if not vendor_payment_address:
+        raise HTTPException(
+            status_code=500,
+            detail="Vendor payment address not found.",
+        )
+
     # Create the invoice via the invoice service.
+    # The invoice service records the vendor's payment address so the buyer
+    # sends XNV directly to the vendor (non-custodial model).
     try:
         resp = requests.post(
             f"{settings.PAYMENTS_BASE_URL}/invoice/create",
-            json={"amount": cart_total},
+            json={"amount": cart_total, "payment_address": vendor_payment_address},
             timeout=10,
         )
     except requests.RequestException as e:

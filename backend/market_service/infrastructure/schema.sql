@@ -6,7 +6,7 @@ USE `market`;
 CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(32) PRIMARY KEY,
     email VARCHAR(255) NOT NULL,
-    password VARCHAR(255) NOT NULL,         -- argon2id hash
+    password VARCHAR(255) NOT NULL,
     status ENUM('unverified','active','deactivated') DEFAULT 'unverified',
     is_vendor TINYINT(1) DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -30,6 +30,9 @@ CREATE TABLE IF NOT EXISTS listings (
     image_name VARCHAR(255) NOT NULL,
     price_xnv DECIMAL(20,8) NOT NULL,
     quantity_available INT NOT NULL DEFAULT 1,
+    -- The vendor's NERVA payment address where XNV payments for this listing
+    -- should be sent. This enables non-custodial payments.
+    payment_address VARCHAR(200) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     KEY idx_vendor (vendor),
     KEY idx_created (created_at),

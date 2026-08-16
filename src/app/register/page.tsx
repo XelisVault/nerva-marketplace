@@ -10,15 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import {
-  CheckCircle2,
-  Eye,
-  EyeOff,
-  Loader2,
-  Lock,
-  Mail,
-  UserIcon,
-} from "@/components/icons";
+import { CheckCircle2, Eye, EyeOff, Loader2, Lock, Mail, User } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -40,11 +32,9 @@ function validate(v: {
 }): FieldErrors {
   const errs: FieldErrors = {};
   if (!USERNAME_RE.test(v.username))
-    errs.username =
-      "3–32 chars, letters / digits / underscore only.";
+    errs.username = "3-32 chars, letters / digits / underscore only.";
   if (!EMAIL_RE.test(v.email)) errs.email = "Enter a valid email address.";
-  if (v.password.length < 8)
-    errs.password = "At least 8 characters.";
+  if (v.password.length < 8) errs.password = "At least 8 characters.";
   if (v.password.length > 128) errs.password = "Max 128 characters.";
   if (v.confirm !== v.password) errs.confirm = "Passwords don't match.";
   return errs;
@@ -64,15 +54,11 @@ function passwordStrength(p: string): {
   const colors = [
     "bg-destructive",
     "bg-destructive/70",
-    "bg-warning",
+    "bg-yellow-500",
     "bg-primary/70",
-    "bg-success",
+    "bg-green-500",
   ];
-  return {
-    score: score as 0 | 1 | 2 | 3 | 4,
-    label: labels[score],
-    color: colors[score],
-  };
+  return { score: score as 0 | 1 | 2 | 3 | 4, label: labels[score], color: colors[score] };
 }
 
 export default function RegisterPage() {
@@ -100,35 +86,28 @@ export default function RegisterPage() {
     setFormError(null);
     try {
       await register(username.trim(), email.trim(), password);
-      toast.success("Account created!", {
-        description:
-          "Check your email to activate your account, then sign in.",
+      toast.success("Account created", {
+        description: "You can now sign in.",
       });
       router.push("/login");
     } catch (err) {
       if (err instanceof HttpError) {
-        if (err.status === 409)
-          setFormError("Username or email is already taken.");
+        if (err.status === 409) setFormError("Username or email is already taken.");
         else setFormError(err.message);
       } else {
-        setFormError(
-          err instanceof Error ? err.message : "Registration failed.",
-        );
+        setFormError(err instanceof Error ? err.message : "Registration failed.");
       }
       setSubmitting(false);
     }
   };
 
   return (
-    <div className="mx-auto flex max-w-md flex-col items-center px-4 py-12 sm:px-6">
+    <div className="mx-auto flex max-w-md flex-col items-center px-4 py-12">
       <Card className="w-full">
         <CardHeader className="text-center">
-          <div className="bg-brand-gradient text-primary-foreground mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl">
-            <UserIcon className="h-6 w-6" />
-          </div>
-          <CardTitle className="text-xl">Create your account</CardTitle>
+          <CardTitle className="text-xl">Create account</CardTitle>
           <CardDescription>
-            Join the NERVA Marketplace community
+            Join the NERVA Marketplace
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -142,7 +121,7 @@ export default function RegisterPage() {
             <div className="space-y-2">
               <Label htmlFor="username">Username</Label>
               <div className="relative">
-                <UserIcon className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+                <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   id="username"
                   type="text"
@@ -155,14 +134,14 @@ export default function RegisterPage() {
                 />
               </div>
               {errors.username && (
-                <p className="text-destructive text-xs">{errors.username}</p>
+                <p className="text-xs text-destructive">{errors.username}</p>
               )}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <div className="relative">
-                <Mail className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+                <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   id="email"
                   type="email"
@@ -175,14 +154,14 @@ export default function RegisterPage() {
                 />
               </div>
               {errors.email && (
-                <p className="text-destructive text-xs">{errors.email}</p>
+                <p className="text-xs text-destructive">{errors.email}</p>
               )}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <div className="relative">
-                <Lock className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+                <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   id="password"
                   type={showPwd ? "text" : "password"}
@@ -190,48 +169,41 @@ export default function RegisterPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className={cn(
-                    "pl-9 pr-10",
-                    errors.password && "border-destructive",
-                  )}
-                  placeholder="••••••••"
+                  className={cn("pl-9 pr-10", errors.password && "border-destructive")}
+                  placeholder="********"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPwd((v) => !v)}
-                  className="text-muted-foreground hover:text-foreground absolute right-3 top-1/2 -translate-y-1/2"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   aria-label={showPwd ? "Hide password" : "Show password"}
                   tabIndex={-1}
                 >
-                  {showPwd ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
+                  {showPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
               {password && (
                 <div className="flex items-center gap-2">
-                  <div className="bg-muted h-1.5 flex-1 overflow-hidden rounded-full">
+                  <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
                     <div
                       className={cn("h-full transition-all", strength.color)}
                       style={{ width: `${(strength.score / 4) * 100}%` }}
                     />
                   </div>
-                  <span className="text-muted-foreground w-12 text-right text-xs">
+                  <span className="w-12 text-right text-xs text-muted-foreground">
                     {strength.label}
                   </span>
                 </div>
               )}
               {errors.password && (
-                <p className="text-destructive text-xs">{errors.password}</p>
+                <p className="text-xs text-destructive">{errors.password}</p>
               )}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="confirm">Confirm password</Label>
               <div className="relative">
-                <Lock className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+                <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   id="confirm"
                   type={showPwd ? "text" : "password"}
@@ -240,27 +212,22 @@ export default function RegisterPage() {
                   value={confirm}
                   onChange={(e) => setConfirm(e.target.value)}
                   className={cn("pl-9", errors.confirm && "border-destructive")}
-                  placeholder="••••••••"
+                  placeholder="********"
                 />
                 {confirm && confirm === password && (
-                  <CheckCircle2 className="text-success absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+                  <CheckCircle2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-green-500" />
                 )}
               </div>
               {errors.confirm && (
-                <p className="text-destructive text-xs">{errors.confirm}</p>
+                <p className="text-xs text-destructive">{errors.confirm}</p>
               )}
             </div>
 
-            <Button
-              type="submit"
-              className="w-full"
-              size="lg"
-              disabled={submitting}
-            >
+            <Button type="submit" className="w-full" size="lg" disabled={submitting}>
               {submitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating account…
+                  Creating account...
                 </>
               ) : (
                 "Create account"
@@ -268,24 +235,18 @@ export default function RegisterPage() {
             </Button>
           </form>
 
-          <p className="text-muted-foreground mt-6 text-center text-sm">
+          <p className="mt-4 text-center text-sm text-muted-foreground">
             Already have an account?{" "}
-            <Link
-              href="/login"
-              className="text-primary font-medium hover:underline"
-            >
+            <Link href="/login" className="font-medium text-primary hover:underline">
               Sign in
             </Link>
           </p>
         </CardContent>
       </Card>
 
-      <p className="text-muted-foreground mt-6 max-w-sm text-center text-xs">
+      <p className="mt-4 max-w-sm text-center text-xs text-muted-foreground">
         By creating an account you agree to our{" "}
-        <Link href="/privacy" className="hover:underline">
-          Privacy Policy
-        </Link>
-        .
+        <Link href="/privacy" className="hover:underline">Privacy Policy</Link>.
       </p>
     </div>
   );

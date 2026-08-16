@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getStore } from "@/lib/mock-store";
+import { db } from "@/lib/mock-store";
 
 /** GET /api/invoice/invoice/[id] */
 export async function GET(
@@ -7,8 +7,16 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
-  const store = getStore();
-  const invoice = store.invoices.get(parseInt(id, 10));
+  const invoiceId = parseInt(id, 10);
+  if (Number.isNaN(invoiceId)) {
+    return NextResponse.json(
+      { detail: "Invalid invoice id." },
+      { status: 400 },
+    );
+  }
+  const invoice = await db.invoice.findUnique({
+    where: { invoiceId },
+  });
   if (!invoice) {
     return NextResponse.json(
       { detail: "Invoice not found." },
@@ -16,10 +24,10 @@ export async function GET(
     );
   }
   return NextResponse.json({
-    invoice_id: invoice.invoice_id,
+    invoice_id: invoice.invoiceId,
     amount: invoice.amount,
     address: invoice.address,
     status: invoice.status,
-    create_time: invoice.create_time,
+    create_time: invoice.createdAt.toISOString(),
   });
 }

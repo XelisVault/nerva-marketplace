@@ -1,6 +1,6 @@
 // NERVA Marketplace — Prisma schema (SQLite for local dev / preview mode).
 // In production the Python backend uses MySQL; this schema mirrors that data
-// model 1:1 so the Next.js preview can run end-to-end without external services.
+// model so the Next.js preview can run end-to-end without external services.
 
 generator client {
   provider = "prisma-client-js"
@@ -43,6 +43,10 @@ model Listing {
   imageName         String
   priceXnv          Float
   quantityAvailable Int      @default(1)
+  // The vendor's NERVA payment address where XNV payments for this listing
+  // should be sent. This enables non-custodial payments: the marketplace
+  // never holds vendor funds.
+  paymentAddress    String
   createdAt         DateTime @default(now())
 
   vendorUser User   @relation(fields: [vendor], references: [username], onDelete: Cascade)
@@ -93,4 +97,27 @@ model Invoice {
   address    String   @unique
   status     String   @default("pending") // pending | confirmed
   createdAt  DateTime @default(now())
+}
+
+// Session persistence — so sessions survive server restarts in dev mode.
+// In production, the Python backend uses Redis for sessions.
+// Note: no FK to User because static mock users (admin, alice) live in
+// memory, not in the DB. The username is validated at lookup time.
+model Session {
+  id        String   @id // the session cookie value (UUID)
+  username  String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@index([username])
+  @@index([expiresAt])
+}
+
+// Cart persistence — stored per session.
+model Cart {
+  sessionId    String   @id
+  items        String   @default("[]") // JSON array of listing IDs
+  shippingData String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }

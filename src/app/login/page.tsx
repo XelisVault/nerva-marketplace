@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Eye, EyeOff, Loader2, Lock, UserIcon } from "@/components/icons";
+import { Eye, EyeOff, Loader2, Lock, User } from "lucide-react";
 import { toast } from "sonner";
 
 export default function LoginPage() {
@@ -32,29 +32,23 @@ export default function LoginPage() {
     setSubmitting(true);
     try {
       await login(username.trim(), password);
-      toast.success("Welcome back!", {
-        description: `Signed in as ${username}`,
-      });
+      toast.success("Signed in");
       router.replace(from);
     } catch (err) {
       if (err instanceof HttpError && err.status === 401) {
         setError("Invalid username or password.");
       } else {
-        const msg = err instanceof Error ? err.message : "Login failed";
-        setError(msg);
+        setError(err instanceof Error ? err.message : "Login failed");
       }
       setSubmitting(false);
     }
   };
 
   return (
-    <div className="mx-auto flex max-w-md flex-col items-center px-4 py-12 sm:px-6">
+    <div className="mx-auto flex max-w-md flex-col items-center px-4 py-12">
       <Card className="w-full">
         <CardHeader className="text-center">
-          <div className="bg-brand-gradient text-primary-foreground mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl">
-            <Lock className="h-6 w-6" />
-          </div>
-          <CardTitle className="text-xl">Welcome back</CardTitle>
+          <CardTitle className="text-xl">Sign in</CardTitle>
           <CardDescription>
             Sign in to your NERVA Marketplace account
           </CardDescription>
@@ -70,7 +64,7 @@ export default function LoginPage() {
             <div className="space-y-2">
               <Label htmlFor="username">Username</Label>
               <div className="relative">
-                <UserIcon className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+                <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   id="username"
                   type="text"
@@ -86,11 +80,9 @@ export default function LoginPage() {
             </div>
 
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
-              </div>
+              <Label htmlFor="password">Password</Label>
               <div className="relative">
-                <Lock className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+                <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   id="password"
                   type={showPwd ? "text" : "password"}
@@ -99,20 +91,16 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="pl-9 pr-10"
-                  placeholder="••••••••"
+                  placeholder="********"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPwd((v) => !v)}
-                  className="text-muted-foreground hover:text-foreground absolute right-3 top-1/2 -translate-y-1/2"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   aria-label={showPwd ? "Hide password" : "Show password"}
                   tabIndex={-1}
                 >
-                  {showPwd ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
+                  {showPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
             </div>
@@ -126,7 +114,7 @@ export default function LoginPage() {
               {submitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Signing in…
+                  Signing in...
                 </>
               ) : (
                 "Sign in"
@@ -134,21 +122,18 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          <p className="text-muted-foreground mt-6 text-center text-sm">
-            Don&apos;t have an account?{" "}
-            <Link
-              href="/register"
-              className="text-primary font-medium hover:underline"
-            >
+          <p className="mt-4 text-center text-sm text-muted-foreground">
+            Don't have an account?{" "}
+            <Link href="/register" className="font-medium text-primary hover:underline">
               Register
             </Link>
           </p>
         </CardContent>
       </Card>
 
-      <p className="text-muted-foreground mt-6 max-w-sm text-center text-xs">
-        Demo accounts · <code className="font-mono">admin / admin123</code>{" "}
-        (vendor) · <code className="font-mono">alice / alice123</code> (customer)
+      <p className="mt-4 max-w-sm text-center text-xs text-muted-foreground">
+        Demo: <code className="font-mono">admin / admin123</code> (vendor){" "}
+        or <code className="font-mono">alice / alice123</code> (customer)
       </p>
     </div>
   );

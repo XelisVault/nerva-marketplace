@@ -15,10 +15,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { PlusCircle, Search } from "@/components/icons";
+import { PlusCircle, Search } from "lucide-react";
 import { useAuth } from "@/lib/auth";
-import { NervaBadge } from "@/components/marketplace/nerva-badge";
-import { Coins } from "@/components/icons";
 
 type SortKey = "newest" | "price-asc" | "price-desc" | "name-asc";
 
@@ -79,33 +77,30 @@ export default function ListingsPage() {
   const isVendor = Boolean(user && (user.is_vendor === 1 || user.is_vendor === true));
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="text-foreground text-2xl font-bold tracking-tight sm:text-3xl">
-            Browse listings
-          </h1>
-          <p className="text-muted-foreground mt-1 text-sm">
-            {all.length} item{all.length === 1 ? "" : "s"} · priced in NERVA (XNV)
-          </p>
-        </div>
+    <div className="mx-auto max-w-6xl px-4 py-6">
+      <div className="mb-4 flex items-center justify-between">
+        <h1 className="text-xl font-semibold">
+          Browse Listings
+          <span className="ml-2 text-sm font-normal text-muted-foreground">
+            ({all.length})
+          </span>
+        </h1>
         {isVendor && (
-          <Button asChild>
+          <Button asChild size="sm">
             <Link href="/create-listing">
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Create listing
+              <PlusCircle className="mr-1.5 h-4 w-4" />
+              New Listing
             </Link>
           </Button>
         )}
       </div>
 
-      {/* Filters */}
-      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+      <div className="mb-4 flex gap-2">
         <div className="relative flex-1">
-          <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             type="search"
-            placeholder="Search by title, description or vendor…"
+            placeholder="Search listings..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="pl-9"
@@ -113,11 +108,11 @@ export default function ListingsPage() {
           />
         </div>
         <Select value={sort} onValueChange={(v) => setSort(v as SortKey)}>
-          <SelectTrigger className="w-full sm:w-52" aria-label="Sort listings">
+          <SelectTrigger className="w-40" aria-label="Sort listings">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="newest">Newest first</SelectItem>
+            <SelectItem value="newest">Newest</SelectItem>
             <SelectItem value="price-asc">Price: Low to High</SelectItem>
             <SelectItem value="price-desc">Price: High to Low</SelectItem>
             <SelectItem value="name-asc">Name: A to Z</SelectItem>
@@ -126,11 +121,10 @@ export default function ListingsPage() {
       </div>
 
       {loading ? (
-        <LoadingState label="Loading listings…" />
+        <LoadingState label="Loading listings..." />
       ) : error ? (
-        <div className="border-destructive/30 bg-destructive/5 text-destructive rounded-lg border p-6 text-center">
-          <p className="text-sm font-medium">Failed to load listings</p>
-          <p className="text-muted-foreground mt-1 text-xs">{error}</p>
+        <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-6 text-center text-sm text-destructive">
+          {error}
         </div>
       ) : (
         <ListingsGrid
@@ -141,24 +135,6 @@ export default function ListingsPage() {
               : "No listings have been published yet."
           }
         />
-      )}
-
-      {/* Tip */}
-      {!loading && filtered.length > 0 && (
-        <div className="bg-accent/40 text-accent-foreground mt-8 flex items-center gap-3 rounded-lg p-4 text-sm">
-          <Coins className="text-primary h-5 w-5 shrink-0" />
-          <p>
-            Every price is in NERVA (XNV) — a CPU-minable privacy coin.{" "}
-            <a
-              href="https://getnerva.org"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary underline-offset-2 hover:underline"
-            >
-              Learn how to get XNV →
-            </a>
-          </p>
-        </div>
       )}
     </div>
   );

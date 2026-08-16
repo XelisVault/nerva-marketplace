@@ -6,14 +6,9 @@ import Link from "next/link";
 import { authApi } from "@/lib/api-client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  AlertCircle,
-  CheckCircle2,
-  Loader2,
-  LogIn,
-} from "@/components/icons";
+import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
 
-type State = "loading" | "success" | "error" | "already-active";
+type State = "loading" | "success" | "error";
 
 export default function ActivatePage() {
   const { token } = useParams<{ token: string }>();
@@ -26,69 +21,55 @@ export default function ActivatePage() {
       .activate(token)
       .then(() => setState("success"))
       .catch((err) => {
-        const msg =
-          err instanceof Error ? err.message : "Activation failed.";
-        setMessage(msg);
+        setMessage(err instanceof Error ? err.message : "Activation failed.");
         setState("error");
       });
   }, [token]);
 
   return (
-    <div className="mx-auto flex max-w-md flex-col items-center px-4 py-16 sm:px-6">
+    <div className="mx-auto flex max-w-md flex-col items-center px-4 py-12">
       <Card className="w-full">
         <CardContent className="flex flex-col items-center gap-4 p-8 text-center">
           {state === "loading" && (
             <>
-              <Loader2 className="text-primary h-10 w-10 animate-spin" />
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
               <div>
-                <h1 className="text-foreground text-lg font-semibold">
-                  Activating your account…
-                </h1>
-                <p className="text-muted-foreground mt-1 text-sm">
-                  Please wait a moment.
-                </p>
+                <h1 className="text-lg font-semibold">Activating...</h1>
+                <p className="mt-1 text-sm text-muted-foreground">Please wait.</p>
               </div>
             </>
           )}
 
           {state === "success" && (
             <>
-              <div className="bg-success/15 flex h-14 w-14 items-center justify-center rounded-full">
-                <CheckCircle2 className="text-success h-8 w-8" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-500/15">
+                <CheckCircle2 className="h-7 w-7 text-green-500" />
               </div>
               <div>
-                <h1 className="text-foreground text-lg font-semibold">
-                  Account activated!
-                </h1>
-                <p className="text-muted-foreground mt-1 text-sm">
-                  You can now sign in to your NERVA Marketplace account.
+                <h1 className="text-lg font-semibold">Account activated</h1>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  You can now sign in.
                 </p>
               </div>
               <Button asChild className="mt-2 w-full">
-                <Link href="/login">
-                  <LogIn className="mr-2 h-4 w-4" />
-                  Sign in
-                </Link>
+                <Link href="/login">Sign in</Link>
               </Button>
             </>
           )}
 
           {state === "error" && (
             <>
-              <div className="bg-destructive/15 flex h-14 w-14 items-center justify-center rounded-full">
-                <AlertCircle className="text-destructive h-8 w-8" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-destructive/15">
+                <AlertCircle className="h-7 w-7 text-destructive" />
               </div>
               <div>
-                <h1 className="text-foreground text-lg font-semibold">
-                  Activation failed
-                </h1>
-                <p className="text-muted-foreground mt-1 text-sm">
-                  {message ||
-                    "This activation link is invalid or has expired."}
+                <h1 className="text-lg font-semibold">Activation failed</h1>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {message || "This activation link is invalid or expired."}
                 </p>
               </div>
               <Button asChild variant="outline" className="mt-2 w-full">
-                <Link href="/register">Try registering again</Link>
+                <Link href="/register">Try again</Link>
               </Button>
             </>
           )}

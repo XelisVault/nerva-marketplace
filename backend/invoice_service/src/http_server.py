@@ -64,22 +64,29 @@ def health():
 
 class InvoiceCreateRequest(BaseModel):
     amount: float = Field(..., gt=0, le=1_000_000)
+    # The vendor's NERVA payment address. If provided, payments go directly
+    # to the vendor (non-custodial). If not provided, the service generates
+    # a subaddress from the marketplace wallet (custodial, legacy mode).
+    payment_address: str = Field(None, min_length=60, max_length=200)
 
 
 @app.post("/invoice/create")
 async def create_invoice(req: InvoiceCreateRequest, sql_client=Depends(get_db)):
-    if not HAVE_WALLET:
-        # Stub mode — generate a fake-looking address so the frontend flow
-        # can be tested end-to-end without a real NERVA wallet.
-        import uuid
-        address = f"NV-STUB-{uuid.uuid4().hex[:48]}"
-    else:
+    if req.payment_address:
+        # Non-custodial mode: use the vendor's own payment address.
+        address = req.payment_address
+    elif HAVE_WALLET:
+        # Custodial mode: generate a subaddress from the marketplace wallet.
         wallet = WalletRPC(host=settings.WALLET_RPC_HOST, port=settings.WALLET_RPC_PORT)
         try:
             address = (await wallet.create_address(account_index=0))["result"]["address"]
         except Exception as e:
             logger.error("Wallet RPC error: %s", e)
             raise HTTPException(status_code=502, detail="Wallet service unavailable.")
+    else:
+        # Stub mode — no wallet available and no vendor address provided.
+        import uuid
+        address = f"NV-STUB-{uuid.uuid4().hex[:48]}"
 
     async with sql_client.cursor() as cur:
         await cur.execute(
@@ -88,7 +95,7 @@ async def create_invoice(req: InvoiceCreateRequest, sql_client=Depends(get_db)):
         )
         invoice_id = cur.lastrowid
 
-    logger.info("Invoice %s created for %s XNV → %s", invoice_id, req.amount, address)
+    logger.info("Invoice %s created for %s XNV -> %s", invoice_id, req.amount, address)
     return {"address": address, "invoice_id": invoice_id}
 
 

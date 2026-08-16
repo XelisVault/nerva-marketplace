@@ -104,6 +104,7 @@ async def create_listing(
     title: str = Form(..., min_length=3, max_length=120),
     description: str = Form(..., min_length=10, max_length=2048),
     price_xnv: float = Form(..., gt=0, le=1_000_000),
+    payment_address: str = Form(..., min_length=60, max_length=200),
     file: UploadFile = File(...),
 ):
     # ---- Auth ----
@@ -153,6 +154,14 @@ async def create_listing(
             detail="File content does not match a valid image format.",
         )
 
+    # ---- Validate payment address ----
+    addr = payment_address.strip()
+    if not re.match(r'^(NV|NS|Niz)', addr):
+        raise HTTPException(
+            status_code=422,
+            detail="Payment address must start with NV, NS, or Niz.",
+        )
+
     # Re-rewind not needed — we have contents. Store from memory.
     storage = ListingStorage()
     img_path = os.path.join(storage.storage_root, f"{uuid.uuid4()}.{magic}")
@@ -164,10 +173,10 @@ async def create_listing(
     async with rds_client.cursor() as cur:
         await cur.execute(
             """
-            INSERT INTO listings (title, description, image_name, price_xnv, vendor)
-            VALUES (%s, %s, %s, %s, %s)
+            INSERT INTO listings (title, description, image_name, price_xnv, vendor, payment_address)
+            VALUES (%s, %s, %s, %s, %s, %s)
             """,
-            (title, description, image_name, price_xnv, username),
+            (title, description, image_name, price_xnv, username, addr),
         )
         listing_id = cur.lastrowid
 

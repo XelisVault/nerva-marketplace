@@ -7,25 +7,15 @@ import { listingApi, cartApi, HttpError } from "@/lib/api-client";
 import type { Listing } from "@/types";
 import { useAuth } from "@/lib/auth";
 import { useCartStore } from "@/lib/cart-store";
-import { NervaBadge, formatXnv } from "@/components/marketplace/nerva-badge";
+import { NervaBadge } from "@/components/marketplace/nerva-badge";
 import { ImageWithFallback } from "@/components/marketplace/image-with-fallback";
 import { listingImageUrl } from "@/lib/config";
 import { BackButton } from "@/components/layout/header";
 import { LoadingState, ErrorState } from "@/components/common/loading-states";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import {
-  AlertCircle,
-  Check,
-  Clock,
-  Package,
-  ShoppingCart,
-  Store,
-} from "@/components/icons";
+import { AlertCircle, ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
-import { format } from "date-fns";
 
 export default function ListingDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -69,9 +59,7 @@ export default function ListingDetailPage() {
     try {
       await cartApi.addItem(listing.listing_id);
       await fetchCart();
-      toast.success("Added to cart", {
-        description: listing.title,
-      });
+      toast.success("Added to cart");
     } catch (err) {
       const msg = err instanceof HttpError ? err.message : "Failed to add to cart";
       toast.error("Could not add to cart", { description: msg });
@@ -80,10 +68,10 @@ export default function ListingDetailPage() {
     }
   };
 
-  if (loading) return <LoadingState label="Loading listing…" />;
+  if (loading) return <LoadingState label="Loading listing..." />;
   if (error) {
     return (
-      <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
+      <div className="mx-auto max-w-2xl px-4 py-6">
         <BackButton fallback="/listings" />
         <ErrorState title="Listing unavailable" message={error} />
         <div className="mt-4 text-center">
@@ -101,68 +89,52 @@ export default function ListingDetailPage() {
   const isOwner = user?.username === listing.vendor;
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-4xl px-4 py-6">
       <BackButton fallback="/listings" />
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {/* Image */}
-        <div className="bg-muted/30 relative aspect-square overflow-hidden rounded-xl border">
+        <div className="relative aspect-square overflow-hidden rounded-lg border bg-muted/30">
           <ImageWithFallback
             src={listingImageUrl(listing.image_name)}
             alt={listing.title}
-            width={800}
-            height={800}
             priority
           />
           {soldOut && (
-            <div className="absolute inset-0 bg-background/60 flex items-center justify-center">
-              <Badge variant="destructive" className="text-sm">
+            <div className="absolute inset-0 flex items-center justify-center bg-background/60">
+              <span className="rounded-full bg-destructive px-3 py-1 text-sm font-semibold text-destructive-foreground">
                 Sold out
-              </Badge>
+              </span>
             </div>
           )}
         </div>
 
         {/* Details */}
         <div className="flex flex-col">
-          <div className="text-muted-foreground flex items-center gap-2 text-sm">
-            <Store className="h-4 w-4" />
-            <span>
-              Sold by{" "}
-              <Link
-                href={`/listings?vendor=${encodeURIComponent(listing.vendor)}`}
-                className="text-foreground font-medium hover:underline"
-              >
-                {listing.vendor}
-              </Link>
-            </span>
-            {listing.create_time && (
-              <>
-                <span className="text-muted-foreground/60">·</span>
-                <Clock className="h-3.5 w-3.5" />
-                <span>{format(new Date(listing.create_time), "MMM d, yyyy")}</span>
-              </>
-            )}
+          <div className="text-sm text-muted-foreground">
+            Sold by{" "}
+            <Link
+              href={`/listings?vendor=${encodeURIComponent(listing.vendor)}`}
+              className="font-medium text-foreground hover:underline"
+            >
+              {listing.vendor}
+            </Link>
           </div>
 
-          <h1 className="text-foreground mt-2 text-2xl font-bold tracking-tight sm:text-3xl">
+          <h1 className="mt-2 text-2xl font-bold tracking-tight">
             {listing.title}
           </h1>
 
-          <div className="mt-4 flex items-center gap-3">
+          <div className="mt-3">
             <NervaBadge price={listing.price_xnv} size="lg" />
-            <span className="text-muted-foreground text-sm">
-              ≈ {formatXnv(listing.price_xnv)} XNV
-            </span>
           </div>
 
-          <div className="mt-4 flex items-center gap-2 text-sm">
-            <Package className="text-muted-foreground h-4 w-4" />
+          <div className="mt-3 text-sm text-muted-foreground">
             {soldOut ? (
-              <span className="text-destructive font-medium">Out of stock</span>
+              <span className="font-medium text-destructive">Out of stock</span>
             ) : (
-              <span className="text-muted-foreground">
-                <span className="text-foreground font-medium">
+              <span>
+                <span className="font-medium text-foreground">
                   {listing.quantity_available}
                 </span>{" "}
                 available
@@ -170,8 +142,8 @@ export default function ListingDetailPage() {
             )}
           </div>
 
-          {/* Actions */}
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+          {/* Add to cart */}
+          <div className="mt-4 flex flex-col gap-2 sm:flex-row">
             <Button
               size="lg"
               onClick={handleAddToCart}
@@ -180,9 +152,9 @@ export default function ListingDetailPage() {
             >
               <ShoppingCart className="mr-2 h-4 w-4" />
               {adding
-                ? "Adding…"
+                ? "Adding..."
                 : !authChecked
-                  ? "Checking…"
+                  ? "Checking..."
                   : isOwner
                     ? "You can't buy your own listing"
                     : soldOut
@@ -195,7 +167,7 @@ export default function ListingDetailPage() {
           </div>
 
           {!user && authChecked && (
-            <p className="text-muted-foreground mt-3 flex items-center gap-1.5 text-xs">
+            <p className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
               <AlertCircle className="h-3.5 w-3.5" />
               You need to{" "}
               <Link
@@ -208,75 +180,33 @@ export default function ListingDetailPage() {
             </p>
           )}
 
-          {/* Tabs */}
-          <Tabs defaultValue="details" className="mt-8">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="details">Details</TabsTrigger>
-              <TabsTrigger value="vendor">Vendor</TabsTrigger>
-              <TabsTrigger value="shipping">Shipping</TabsTrigger>
-            </TabsList>
-            <TabsContent value="details" className="mt-4">
-              <Card>
-                <CardContent className="prose prose-sm dark:prose-invert max-w-none p-4">
-                  <p className="text-foreground/90 whitespace-pre-wrap text-sm leading-relaxed">
-                    {listing.description}
-                  </p>
-                </CardContent>
-              </Card>
-            </TabsContent>
-            <TabsContent value="vendor" className="mt-4">
-              <Card>
-                <CardContent className="space-y-3 p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-brand-gradient text-primary-foreground flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold">
-                      {listing.vendor.slice(0, 2).toUpperCase()}
-                    </div>
-                    <div>
-                      <p className="text-foreground text-sm font-semibold">
-                        {listing.vendor}
-                      </p>
-                      <p className="text-muted-foreground text-xs">
-                        Vendor on NERVA Marketplace
-                      </p>
-                    </div>
-                  </div>
-                  <p className="text-muted-foreground text-sm">
-                    All payments go directly to a unique NERVA subaddress
-                    generated for each order. The marketplace never holds
-                    vendor funds.
-                  </p>
-                </CardContent>
-              </Card>
-            </TabsContent>
-            <TabsContent value="shipping" className="mt-4">
-              <Card>
-                <CardContent className="space-y-3 p-4 text-sm">
-                  <div className="flex items-start gap-3">
-                    <Check className="text-success mt-0.5 h-4 w-4 shrink-0" />
-                    <p className="text-muted-foreground">
-                      Provide your shipping address at checkout — it's stored
-                      encrypted on the order record and only visible to the
-                      vendor.
-                    </p>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <Check className="text-success mt-0.5 h-4 w-4 shrink-0" />
-                    <p className="text-muted-foreground">
-                      Vendors mark orders as shipped once the payment is
-                      confirmed on-chain (1 confirmation required).
-                    </p>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <Check className="text-success mt-0.5 h-4 w-4 shrink-0" />
-                    <p className="text-muted-foreground">
-                      Track payment status live on the invoice page via
-                      WebSocket.
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+          {/* Description */}
+          <Card className="mt-6">
+            <CardContent className="p-4">
+              <h2 className="mb-2 text-sm font-semibold">Description</h2>
+              <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground/90">
+                {listing.description}
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Payment info */}
+          {listing.payment_address && (
+            <Card className="mt-3">
+              <CardContent className="p-4">
+                <h2 className="mb-2 text-sm font-semibold">Payment</h2>
+                <p className="text-xs text-muted-foreground">
+                  Payments are sent directly to the vendor's NERVA address.
+                  The marketplace never holds your funds.
+                </p>
+                <div className="mt-2 rounded border bg-muted/40 p-2">
+                  <code className="block truncate font-mono text-xs">
+                    {listing.payment_address}
+                  </code>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </div>
