@@ -49,6 +49,7 @@ form {
 }
 
 form input[type="text"],
+form input[type="number"],
 form input[type="file"] {
     width: 100%;
     padding: 10px;
@@ -58,6 +59,7 @@ form input[type="file"] {
 }
 
 form input[type="text"]:focus,
+form input[type="number"]:focus,
 form input[type="file"]:focus {
     border-color: #007bff;
     outline: none;

@@ -159,7 +159,9 @@ that has to be done directly in the database for now.
 ## Vendor: creating a listing
 
 1. Open the navigation drawer and click **Create Listing**.
-2. Fill in the title, description, and price in XNV.
+2. Fill in the title, description, price in XNV, and the quantity
+   available (how many units of this item you have in stock). The
+   quantity defaults to 1 and must be at least 1.
 3. Choose an image file (the backend accepts jpg, jpeg, png).
 4. Click **Submit**.
 
