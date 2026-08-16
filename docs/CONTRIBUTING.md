@@ -72,11 +72,11 @@ For full-stack development with the NERVA wallet, use Docker Compose
 
 ### TypeScript / React
 
-- **TypeScript strict mode** — no `any` without a comment explaining why.
-- **Functional components** only — no class components.
+- **TypeScript strict mode** - no `any` without a comment explaining why.
+- **Functional components** only - no class components.
 - **Hooks** for state and side effects.
-- **shadcn/ui** components — don't reinvent UI primitives.
-- **Tailwind CSS** classes — no inline styles except for dynamic values.
+- **shadcn/ui** components - don't reinvent UI primitives.
+- **Tailwind CSS** classes - no inline styles except for dynamic values.
 - **`'use client'` directive** at the top of any file that uses hooks,
   `useState`, browser APIs, or React context.
 - **Imports**: group as (1) external libs, (2) `@/components/...`,
@@ -90,14 +90,14 @@ For full-stack development with the NERVA wallet, use Docker Compose
 ### Python
 
 - **Type hints** on every function signature.
-- **Pydantic v2** for request/response models — no raw `dict` parameters.
-- **Async** everywhere — no blocking I/O in route handlers.
-- **`HTTPException`** for every error path — no returning bare integers
+- **Pydantic v2** for request/response models - no raw `dict` parameters.
+- **Async** everywhere - no blocking I/O in route handlers.
+- **`HTTPException`** for every error path - no returning bare integers
   or strings.
-- **Parameterised SQL** — every query uses `%s` placeholders with
+- **Parameterised SQL** - every query uses `%s` placeholders with
   1-tuples. Never string-concatenate.
-- **Logging** via the `logging` module — no `print()` in production code.
-- **PEP 8** — use `black` and `ruff` if you want auto-formatting.
+- **Logging** via the `logging` module - no `print()` in production code.
+- **PEP 8** - use `black` and `ruff` if you want auto-formatting.
 
 ## Commit messages
 
@@ -117,7 +117,7 @@ security: enforce rate limit on create-listing
    ```bash
    git checkout -b feat/my-feature
    ```
-2. **Make your changes**. Keep the diff focused — one logical change per PR.
+2. **Make your changes**. Keep the diff focused - one logical change per PR.
 3. **Test locally**:
    - Frontend: `bun run lint`, `bun run typecheck`, then manually exercise
      the affected flows in the browser.
@@ -140,7 +140,7 @@ bun run lint       # ESLint
 bun run typecheck  # tsc --noEmit
 ```
 
-(Unit tests with Vitest are planned — not yet set up.)
+(Unit tests with Vitest are planned - not yet set up.)
 
 ### Backend
 
@@ -152,7 +152,7 @@ cd ../invoice_service
 pytest tests/ -v
 ```
 
-(Integration tests require Docker — see `backend/integration_tests/`.)
+(Integration tests require Docker - see `backend/integration_tests/`.)
 
 ## Reporting bugs
 
@@ -174,7 +174,7 @@ See [`docs/SECURITY.md`](SECURITY.md) for the full policy.
 
 ## Code of conduct
 
-Be kind. Be patient. Assume good faith. Disagreements happen — address
+Be kind. Be patient. Assume good faith. Disagreements happen - address
 them constructively, focused on the code, not the person.
 
 ## License

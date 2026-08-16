@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/mock-store";
 
-/** GET /api/market/market/listings — returns all listings, newest first. */
+/** GET /api/market/market/listings - returns all listings, newest first. */
 export async function GET() {
   const listings = await db.listing.findMany({
     orderBy: { createdAt: "desc" },

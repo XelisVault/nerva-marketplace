@@ -23,15 +23,19 @@ export default function AboutPage() {
       <Card className="mb-4">
         <CardContent className="space-y-3 p-4 text-sm leading-relaxed">
           <p>
-            <strong>NERVA (XNV)</strong> is a privacy-focused cryptocurrency that
-            can only be mined with a CPU. It is a fork of Monero and uses the
-            Cryptonight Adaptive proof-of-work algorithm, which is designed to
-            resist GPU and ASIC mining.
+            <strong>NERVA (XNV)</strong> is a privacy-focused cryptocurrency
+            that can only be mined with a CPU. It is a fork of Monero and uses
+            the Cryptonight Adaptive proof-of-work algorithm, which resists
+            GPU and ASIC mining.
           </p>
           <p className="text-muted-foreground">
             Unlike most cryptocurrencies, NERVA does not support pool mining.
             Every miner runs a full node. This means one CPU equals one vote,
             making the network more decentralized and resistant to censorship.
+          </p>
+          <p className="text-muted-foreground">
+            Transactions are private: senders, recipients, and amounts are
+            hidden on-chain. NERVA is fair-launched with no ICO and no premine.
           </p>
         </CardContent>
       </Card>
@@ -58,7 +62,7 @@ export default function AboutPage() {
         <Card>
           <CardContent className="p-4">
             <div className="text-2xl font-bold">CPU</div>
-            <div className="text-xs text-muted-foreground">Mining</div>
+            <div className="text-xs text-muted-foreground">Mining only</div>
           </CardContent>
         </Card>
       </div>
@@ -66,11 +70,11 @@ export default function AboutPage() {
       <div className="mt-6 flex flex-col gap-2 sm:flex-row">
         <Button asChild>
           <a
-            href="https://getnerva.org"
+            href="https://nerva.one"
             target="_blank"
             rel="noopener noreferrer"
           >
-            Visit getnerva.org
+            Visit nerva.one
           </a>
         </Button>
         <Button asChild variant="outline">

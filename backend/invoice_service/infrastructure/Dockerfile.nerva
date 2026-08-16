@@ -30,7 +30,7 @@ CMD ["nerva-linux-x86_64-v0.3.0.0/nerva-wallet-rpc", \
      "--rpc-bind-ip", "0.0.0.0", \
      "--confirm-external-bind", \
      "--rpc-bind-port", "28082", \
-     "--daemon-address", "daemon.getnerva.org:17566", \
+     "--daemon-address", "daemon.nerva.one:17566", \
      "--log-level", "2", \
      "--disable-rpc-login", \
      "--tx-notify", "python3 /app/process_new_tx.py %s"]

@@ -1,5 +1,5 @@
 /**
- * NERVA Marketplace — Shared TypeScript types.
+ * NERVA Marketplace - Shared TypeScript types.
  * These types mirror the Python backend's Pydantic models and DB schema.
  */
 

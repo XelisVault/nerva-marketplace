@@ -1,16 +1,25 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
-import { invoiceApi } from "@/lib/api-client";
+import { invoiceApi, HttpError } from "@/lib/api-client";
 import type { Invoice, InvoiceTransaction } from "@/types";
-import { invoiceWsUrlFor } from "@/lib/config";
+import { invoiceWsUrlFor, USE_REAL_BACKEND } from "@/lib/config";
 import { BackButton } from "@/components/layout/header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { LoadingState, ErrorState } from "@/components/common/loading-states";
 import { NervaBadge, formatXnv } from "@/components/marketplace/nerva-badge";
-import { Check, CheckCircle2, Clock, Copy, Hash, Loader2, Wallet } from "lucide-react";
+import {
+  Check,
+  CheckCircle2,
+  Clock,
+  Copy,
+  ExternalLink,
+  Hash,
+  Loader2,
+  Wallet,
+} from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -21,28 +30,39 @@ export default function InvoicePage() {
   const [error, setError] = useState<string | null>(null);
   const [transactions, setTransactions] = useState<InvoiceTransaction[]>([]);
   const [copied, setCopied] = useState(false);
+  const [confirming, setConfirming] = useState(false);
   const wsRef = useRef<WebSocket | null>(null);
-  const simTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const pollRef = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
+  // Fetch invoice details.
+  const fetchInvoice = useCallback(async () => {
     if (!id) return;
-    invoiceApi
-      .get(id)
-      .then((data) => {
-        setInvoice(data);
-        setLoading(false);
-      })
-      .catch((err) => {
+    try {
+      const data = await invoiceApi.get(id);
+      setInvoice(data);
+      setError(null);
+    } catch (err) {
+      if (err instanceof HttpError && err.status === 404) {
+        setError("This invoice does not exist.");
+      } else {
         setError(err instanceof Error ? err.message : "Failed to load invoice.");
-        setLoading(false);
-      });
+      }
+    } finally {
+      setLoading(false);
+    }
   }, [id]);
 
+  useEffect(() => {
+    fetchInvoice();
+  }, [fetchInvoice]);
+
+  // Connect to WebSocket (real backend) or simulate (dev mode).
   useEffect(() => {
     if (!invoice) return;
     const wsUrl = invoiceWsUrlFor(invoice.invoice_id);
 
-    if (wsUrl) {
+    if (wsUrl && USE_REAL_BACKEND) {
+      // Real backend: connect to WebSocket for payment notifications.
       const ws = new WebSocket(wsUrl);
       wsRef.current = ws;
       ws.addEventListener("open", () => console.log("[ws] connected"));
@@ -62,7 +82,9 @@ export default function InvoicePage() {
             return [...prev, { txId, amount, confirmations }];
           });
           if (confirmations >= 1) {
-            setInvoice((inv) => (inv ? { ...inv, status: "confirmed" } : inv));
+            setInvoice((inv) =>
+              inv ? { ...inv, status: "confirmed" } : inv,
+            );
           }
         } catch (e) {
           console.error("[ws] parse error:", e);
@@ -70,34 +92,24 @@ export default function InvoicePage() {
       });
       ws.addEventListener("error", (e) => console.error("[ws] error:", e));
       ws.addEventListener("close", () => console.log("[ws] closed"));
-      return () => ws.close();
+
+      // Also poll the invoice status every 10s as a fallback.
+      pollRef.current = setInterval(() => {
+        fetchInvoice();
+      }, 10000);
+
+      return () => {
+        ws.close();
+        if (pollRef.current) clearInterval(pollRef.current);
+      };
     }
 
-    // Preview mode: simulate a payment after ~5s.
-    simTimerRef.current = setTimeout(() => {
-      const txId = "sim_" + Math.random().toString(36).slice(2, 14);
-      setTransactions((prev) => [
-        ...prev,
-        { txId, amount: String(invoice.amount), confirmations: 0 },
-      ]);
-      toast.info("Payment detected", {
-        description: "Waiting for confirmation...",
-      });
-      setTimeout(() => {
-        setTransactions((prev) =>
-          prev.map((t) =>
-            t.txId === txId ? { ...t, confirmations: 1 } : t,
-          ),
-        );
-        setInvoice((inv) => (inv ? { ...inv, status: "confirmed" } : inv));
-        toast.success("Payment confirmed");
-      }, 8000);
-    }, 5000);
-
+    // Dev/preview mode: no WebSocket. We'll let the user click
+    // "I've sent the payment" to simulate the confirmation flow.
     return () => {
-      if (simTimerRef.current) clearTimeout(simTimerRef.current);
+      if (pollRef.current) clearInterval(pollRef.current);
     };
-  }, [invoice]);
+  }, [invoice, fetchInvoice]);
 
   const handleCopy = async () => {
     if (!invoice) return;
@@ -109,6 +121,43 @@ export default function InvoicePage() {
     } catch {
       toast.error("Failed to copy");
     }
+  };
+
+  // Dev/preview: simulate payment confirmation by calling the confirm endpoint.
+  const handleSimulatePayment = async () => {
+    if (!invoice || confirming) return;
+    setConfirming(true);
+
+    // Step 1: show a "pending" transaction
+    const txId = "sim_" + Math.random().toString(36).slice(2, 14);
+    setTransactions((prev) => [
+      ...prev,
+      { txId, amount: String(invoice.amount), confirmations: 0 },
+    ]);
+    toast.info("Payment detected", {
+      description: "Waiting for network confirmation...",
+    });
+
+    // Step 2: after 4s, call the confirm endpoint to mark it in the DB
+    setTimeout(async () => {
+      try {
+        const result = await invoiceApi.confirm(invoice.invoice_id);
+        setTransactions((prev) =>
+          prev.map((t) =>
+            t.txId === txId ? { ...t, confirmations: 1 } : t,
+          ),
+        );
+        setInvoice(result.invoice);
+        toast.success("Payment confirmed", {
+          description: "The vendor has been notified.",
+        });
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : "Confirmation failed";
+        toast.error("Confirmation failed", { description: msg });
+      } finally {
+        setConfirming(false);
+      }
+    }, 4000);
   };
 
   if (loading) return <LoadingState label="Loading invoice..." />;
@@ -134,7 +183,9 @@ export default function InvoicePage() {
       <div
         className={cn(
           "mb-4 flex items-center gap-3 rounded-lg border p-4",
-          confirmed ? "border-green-500/30 bg-green-500/5" : "border-yellow-500/30 bg-yellow-500/5",
+          confirmed
+            ? "border-green-500/30 bg-green-500/5"
+            : "border-yellow-500/30 bg-yellow-500/5",
         )}
       >
         <div
@@ -150,13 +201,18 @@ export default function InvoicePage() {
           )}
         </div>
         <div className="flex-1">
-          <h1 className={cn("text-base font-semibold", confirmed ? "text-green-600" : "text-yellow-600")}>
+          <h1
+            className={cn(
+              "text-base font-semibold",
+              confirmed ? "text-green-600" : "text-yellow-600",
+            )}
+          >
             {confirmed ? "Payment confirmed" : "Awaiting payment"}
           </h1>
           <p className="text-sm text-muted-foreground">
             {confirmed
-              ? "Your payment has been confirmed. The vendor has been notified."
-              : "Send the exact XNV amount to the address below."}
+              ? "Your payment has been confirmed. The vendor has been notified and will ship your order."
+              : "Send the exact XNV amount to the address below to complete your order."}
           </p>
         </div>
         <NervaBadge price={invoice.amount} size="lg" />
@@ -205,11 +261,27 @@ export default function InvoicePage() {
               to this address.
             </p>
           </div>
+
+          <div className="rounded-lg bg-accent p-2.5 text-xs">
+            <p className="text-muted-foreground">
+              Don't send from an exchange. Use a wallet you control (nerva-wallet-gui or CLI) so you can send the exact amount.
+            </p>
+          </div>
+
+          <a
+            href="https://nerva.one"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+          >
+            Get a NERVA wallet
+            <ExternalLink className="h-3 w-3" />
+          </a>
         </CardContent>
       </Card>
 
       {/* Transactions */}
-      <Card>
+      <Card className="mb-4">
         <CardHeader>
           <CardTitle className="text-base">
             Transactions {transactions.length > 0 && `(${transactions.length})`}
@@ -254,8 +326,38 @@ export default function InvoicePage() {
         </CardContent>
       </Card>
 
-      <p className="mt-3 text-center text-xs text-muted-foreground">
+      {/* Dev mode: simulate payment button */}
+      {!USE_REAL_BACKEND && !confirmed && (
+        <Card className="mb-4 border-dashed">
+          <CardContent className="p-4">
+            <p className="mb-2 text-xs text-muted-foreground">
+              <strong>Dev mode:</strong> No real NERVA wallet connected.
+              Click below to simulate a payment and test the confirmation flow.
+            </p>
+            <Button
+              onClick={handleSimulatePayment}
+              disabled={confirming || transactions.length > 0}
+              variant="outline"
+              className="w-full"
+            >
+              {confirming ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Confirming...
+                </>
+              ) : (
+                "I've sent the payment (simulate)"
+              )}
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
+      <p className="text-center text-xs text-muted-foreground">
         Invoice #{invoice.invoice_id}
+        {invoice.create_time && (
+          <> - created {new Date(invoice.create_time).toLocaleString()}</>
+        )}
       </p>
     </div>
   );

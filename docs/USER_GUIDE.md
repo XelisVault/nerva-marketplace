@@ -1,12 +1,12 @@
-# User Guide — Buyers
+# User Guide - Buyers
 
 Welcome to NERVA Marketplace! This guide walks you through everything you
 can do as a buyer: registering an account, browsing listings, placing an
 order, and tracking payment status.
 
 > **Prerequisites**: To actually pay for an order you need a NERVA (XNV)
-> wallet with some XNV in it. Get one at [getnerva.org](https://getnerva.org)
-> and acquire XNV on Cratex, TradeOgre, or BitMesh — or mine it yourself
+> wallet with some XNV in it. Get one at [nerva.one](https://nerva.one)
+> and acquire XNV on Cratex, TradeOgre, or BitMesh - or mine it yourself
 > with your CPU.
 
 ---
@@ -15,14 +15,14 @@ order, and tracking payment status.
 
 1. Click **Sign in** in the top-right corner, then **Register**.
 2. Choose a username (3–32 chars, letters / digits / underscore), enter
-   your email, and pick a strong password (≥ 8 chars — the UI shows a
+   your email, and pick a strong password (≥ 8 chars - the UI shows a
    strength meter).
 3. Submit the form. We send you an activation email.
 4. Click the activation link in the email. Your account is now active.
 5. Sign in with your username + password.
 
 > **In dev/preview mode** (when running locally without the Python
-> backend), accounts are auto-activated — no email is sent. Demo accounts:
+> backend), accounts are auto-activated - no email is sent. Demo accounts:
 > `admin / admin123` (vendor) and `alice / alice123` (customer).
 
 ---
@@ -46,9 +46,9 @@ The listing detail page shows:
 - **Price in XNV** (with a Nerva coin badge).
 - Stock count.
 - Three tabs:
-  - **Details** — the full description.
-  - **Vendor** — info about the seller.
-  - **Shipping** — how shipping works on this marketplace.
+  - **Details** - the full description.
+  - **Vendor** - info about the seller.
+  - **Shipping** - how shipping works on this marketplace.
 
 Click **Add to cart** to add the item. If you're not signed in, you'll be
 redirected to the login page (and returned to the listing after sign-in).
@@ -85,7 +85,7 @@ redirected to the login page (and returned to the listing after sign-in).
 The invoice page shows:
 
 - **Amount due** in XNV.
-- **NERVA subaddress** — a long string starting with `NV…`. Click the
+- **NERVA subaddress** - a long string starting with `NV…`. Click the
   copy icon to copy it.
 - A status banner: **Awaiting payment** (yellow) or **Payment confirmed**
   (green).
@@ -96,12 +96,12 @@ To pay:
 
 1. Open your NERVA wallet (e.g. `nerva-wallet-gui`).
 2. Send **exactly** the amount due to the subaddress shown.
-3. Wait — within a minute or two you should see the transaction appear
+3. Wait - within a minute or two you should see the transaction appear
    in the **Transactions** list (status: *Pending*).
 4. Once the network confirms the transaction (typically within another
    minute), the status flips to **Confirmed** and the vendor is notified.
 
-> ⚠️ **Don't send from an exchange** — exchanges often send from shared
+> ⚠️ **Don't send from an exchange** - exchanges often send from shared
 > addresses and don't always include the exact amount. Use a wallet you
 > control.
 
@@ -124,9 +124,9 @@ automatically.
 ## FAQ
 
 **Q: Can I cancel an order?**
-A: Before you send payment: yes — just close the invoice page and don't
+A: Before you send payment: yes - just close the invoice page and don't
 send XNV. The invoice will expire after some time. After you've sent
-payment: no — on-chain payments are irreversible.
+payment: no - on-chain payments are irreversible.
 
 **Q: What if I send the wrong amount?**
 A: The system requires the exact amount. If you send less, the invoice
@@ -138,7 +138,7 @@ A: So the vendor knows where to ship your item. Shipping details are
 stored on the order record and only visible to the vendor of that order.
 
 **Q: Is my payment private?**
-A: Yes — NERVA is a privacy coin (Cryptonote + RingCT). Sender, recipient,
+A: Yes - NERVA is a privacy coin (Cryptonote + RingCT). Sender, recipient,
 and amount are hidden on-chain. The vendor sees only their own subaddress
 and the fact that it received a payment.
 

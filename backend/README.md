@@ -1,4 +1,4 @@
-# NERVA Marketplace — Backend
+# NERVA Marketplace - Backend
 
 This directory contains the two Python services that power the NERVA Marketplace:
 
@@ -41,10 +41,10 @@ list of fixes. Highlights:
   enforced via `HTTPException` (not `assert`).
 - **Path traversal**: `get_image` rejects any `image_name` containing `/` or `..`.
 - **Proper HTTP status codes**: no more `return 300` / `return 505` /
-  `return 600` — all error paths raise `HTTPException`.
+  `return 600` - all error paths raise `HTTPException`.
 - **Env-based config**: no hardcoded DB / Redis / RabbitMQ passwords.
 - **Healthchecks**: every service exposes `GET /health`.
 
 ## License
 
-MIT — see [`../LICENSE`](../LICENSE).
+MIT - see [`../LICENSE`](../LICENSE).

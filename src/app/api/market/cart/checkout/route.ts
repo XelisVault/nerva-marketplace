@@ -3,7 +3,7 @@ import { db } from "@/lib/mock-store";
 import { getCurrentUser, getSessionUsername, getOrCreateCart, clearCart } from "@/lib/mock-session";
 import { v4 as uuidv4 } from "uuid";
 
-/** POST /api/market/cart/checkout — creates an invoice and an order. */
+/** POST /api/market/cart/checkout - creates an invoice and an order. */
 export async function POST() {
   const cart = await getOrCreateCart();
   if (!cart) {

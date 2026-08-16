@@ -1,6 +1,6 @@
-# Vendor Guide — Sellers
+# Vendor Guide - Sellers
 
-This guide is for **vendors** — users who want to list goods for sale on
+This guide is for **vendors** - users who want to list goods for sale on
 NERVA Marketplace and receive XNV payments directly to their own wallet.
 
 > **How do I become a vendor?**
@@ -29,11 +29,11 @@ If you don't see these links, your account doesn't have vendor status.
 1. Click **Create Listing** (in the header dropdown or the listings page).
 2. Fill in the form:
    - **Title** (3–120 characters)
-   - **Description** (10–2048 characters) — describe the item, its
+   - **Description** (10–2048 characters) - describe the item, its
      condition, what's included, shipping terms, etc.
-   - **Price (XNV)** — the price in NERVA. Must be between 0.0001 and
+   - **Price (XNV)** - the price in NERVA. Must be between 0.0001 and
      1,000,000 XNV.
-   - **Image** — PNG or JPEG, max 10 MB. This is the image buyers will
+   - **Image** - PNG or JPEG, max 10 MB. This is the image buyers will
      see on the listing card and detail page.
 3. Click **Publish listing**.
 
@@ -50,7 +50,7 @@ Your listing is immediately visible on the marketplace.
 When a buyer checks out an order containing your listing:
 
 1. A unique NERVA subaddress is generated **for the marketplace wallet**
-   (not your personal wallet — see [How payments work](#how-payments-work)
+   (not your personal wallet - see [How payments work](#how-payments-work)
    below).
 2. The buyer sends XNV to that subaddress.
 3. The `nerva-wallet-rpc` daemon detects the transaction and notifies
@@ -68,10 +68,10 @@ When a buyer checks out an order containing your listing:
 2. Find the order with status *Paid*.
 3. The shipping details the buyer provided at checkout are visible on
    the order detail. (Currently the order list page doesn't surface
-   shipping details — this is a known TODO. For now, query the database
+   shipping details - this is a known TODO. For now, query the database
    directly or wait for the next release.)
 4. Ship the item.
-5. Mark the order as shipped. (Currently this is a manual DB update —
+5. Mark the order as shipped. (Currently this is a manual DB update -
    the UI button is a planned feature. See
    [issue tracker](https://github.com/XelisVault/nerva-marketplace/issues).)
 
@@ -99,7 +99,7 @@ marketplace operator before listing.
 - **Be honest about condition.** If an item is used, say so. The
   marketplace has no review system yet (planned) but dishonest listings
   will be removed.
-- **Set a fair XNV price.** XNV is volatile — consider repricing
+- **Set a fair XNV price.** XNV is volatile - consider repricing
   periodically. The marketplace does not auto-adjust prices.
 - **Respond to issues promptly.** Buyers can't message you directly
   through the marketplace yet (planned). For now, they'll open a issue
@@ -121,7 +121,7 @@ one, contact the marketplace operator. A delete-listing UI is planned.
 
 **Q: How much does it cost to list?**
 A: Listing is free. The marketplace may charge a fee on completed orders
-in the future — currently there is none.
+in the future - currently there is none.
 
 **Q: Can I sell digital goods?**
 A: The marketplace was designed for physical goods (the shipping-details
@@ -130,11 +130,11 @@ you'd need to put the download link in the shipping details. A
 proper digital-goods flow is planned.
 
 **Q: Can I edit a listing after publishing?**
-A: Not yet — editing is a planned feature. For now, delete (via the
+A: Not yet - editing is a planned feature. For now, delete (via the
 operator) and re-create.
 
 **Q: What happens if a buyer doesn't pay?**
 A: The invoice just stays *pending* indefinitely. The item's stock is
 decremented at checkout time, so it may appear sold out to other buyers
 even if the original buyer never pays. The operator can manually
-restore stock in this case — auto-restock is planned.
+restore stock in this case - auto-restock is planned.

@@ -3,11 +3,11 @@
 This directory holds the NERVA wallet files used by `nerva-wallet-rpc`.
 
 In production you must provide:
-- `mainnet_rpc` — the wallet file (created with `nerva-wallet-cli`)
-- `mainnet_rpc.keys` — the corresponding keys file (optional, only if
+- `mainnet_rpc` - the wallet file (created with `nerva-wallet-cli`)
+- `mainnet_rpc.keys` - the corresponding keys file (optional, only if
   the wallet is password-protected and the keys are stored separately)
 
-These files are **highly sensitive** — they control the wallet that
+These files are **highly sensitive** - they control the wallet that
 receives all marketplace payments. **Never commit them to git.** The
 `.gitignore` at the repo root already excludes `*.keys`, but make sure
 the wallet file itself (`mainnet_rpc`) is also excluded.

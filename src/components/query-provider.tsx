@@ -10,7 +10,7 @@ export function QueryProvider({ children }: { children: ReactNode }) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 30_000, // 30s — short, since prices/quantities change.
+            staleTime: 30_000, // 30s - short, since prices/quantities change.
             retry: 1,
             refetchOnWindowFocus: false,
           },

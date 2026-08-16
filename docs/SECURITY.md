@@ -8,7 +8,7 @@ specific security fixes applied in this fork compared to the original
 
 | Asset | Threat | Mitigation |
 |-------|--------|-----------|
-| User passwords | DB leak → password recovery | Argon2id hashing (PyNaCl) — memory-hard, GPU-resistant. |
+| User passwords | DB leak → password recovery | Argon2id hashing (PyNaCl) - memory-hard, GPU-resistant. |
 | User sessions | Session hijacking via XSS / CSRF | `HttpOnly` + `Secure` + `SameSite=Lax` cookies; 2-hour TTL; sessions stored in Redis (not JWTs). |
 | Vendor accounts | Privilege escalation by non-vendors | Server-side `is_vendor` check on every vendor-only endpoint (not just client-side). |
 | Listing images | Malicious upload (PHP shell, SVG with embedded JS, path traversal) | Triple validation: extension allowlist, MIME-type allowlist, magic-byte check via `imghdr`. Stored with UUID filenames. `get_image` rejects any name containing `/`, `\`, or `..`. |
@@ -54,7 +54,7 @@ Files: `market_routes.py`, `user_routes.py`, `cart_routes.py`,
 self.session_storage_client.set(session_id, json.dumps({...}))
 ```
 
-No TTL — sessions live forever in Redis until manually deleted. A
+No TTL - sessions live forever in Redis until manually deleted. A
 leaked session cookie is valid indefinitely.
 
 **Fixed**: every `client.set()` for sessions includes `ex=7200` (2-hour
@@ -86,7 +86,7 @@ Files: `order_routes.py`, `market_routes.py`.
 {userDetails ? <button>Logout</button> : ...}
 ```
 
-The logout button had no `onClick` handler — clicking it did nothing.
+The logout button had no `onClick` handler - clicking it did nothing.
 The backend `POST /users/logout` endpoint existed but was never called.
 
 **Fixed**: the new `Header` component wires the logout button to the
@@ -102,7 +102,7 @@ Files: `src/components/layout/header.tsx`, `src/lib/auth.tsx`.
 <button>Remove</button>
 ```
 
-No `onClick` — the button did nothing.
+No `onClick` - the button did nothing.
 
 **Fixed**: new `POST /cart/remove_item/{listing_id}` endpoint + cart
 store action + UI wiring. The button now actually removes the item.
@@ -225,7 +225,7 @@ These default passwords were committed to the public repo. Anyone
 running the stock `docker compose up` would be using known passwords.
 
 **Fixed**: `DB_PASS`, `CACHE_PASS`, `INV_DB_PASS`, `RABBITMQ_PASS` have
-**no defaults** — the app refuses to start without them. The
+**no defaults** - the app refuses to start without them. The
 docker-compose.yml uses `${DB_PASS:?DB_PASS is required}` to fail
 loudly if the env var is missing. `.env.example` documents every
 required secret.
@@ -257,7 +257,7 @@ File: `config.py` (both services).
 ### 13. Development build no longer served in production
 
 **Original** frontend was a Create React App dev bundle served by
-Express in production — with `console.log`s, source maps, and
+Express in production - with `console.log`s, source maps, and
 `react_jsx_dev_runtime` exposed.
 
 **Fixed**: Next.js 16 builds a production bundle with `next build`.
@@ -277,15 +277,15 @@ Files: `market_service/src/http_server.py`,
 
 ## Known limitations
 
-These are **not yet fixed** — they're on the roadmap:
+These are **not yet fixed** - they're on the roadmap:
 
 1. **No CSRF tokens**. `SameSite=Lax` cookies mitigate the most common
    CSRF vectors, but a dedicated CSRF token (synchroniser pattern or
    double-submit cookie) would be stronger. Planned.
 2. **No Content-Security-Policy header**. The Next.js app doesn't set
-   a CSP — a future release should ship a strict CSP (no `unsafe-inline`).
+   a CSP - a future release should ship a strict CSP (no `unsafe-inline`).
 3. **Payments go to the marketplace wallet, not vendor wallets.** This
-   is an architectural limitation — see `docs/VENDOR_GUIDE.md`. A future
+   is an architectural limitation - see `docs/VENDOR_GUIDE.md`. A future
    release will use each vendor's wallet view key to generate
    subaddresses directly.
 4. **No 2FA.** Vendor accounts in particular should support TOTP. Planned.

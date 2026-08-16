@@ -17,7 +17,7 @@ administration.
 - A NERVA wallet file (`mainnet_rpc`) with sufficient XNV for transaction
   fees (a few XNV is plenty). Create one with `nerva-wallet-cli`.
 
-## Step 1 — Clone and configure
+## Step 1 - Clone and configure
 
 ```bash
 git clone https://github.com/XelisVault/nerva-marketplace.git
@@ -38,7 +38,7 @@ Edit `.env`:
 | `RATE_LIMIT_*` | Adjust if you expect higher traffic. |
 | `REQUIRED_CONFIRMATIONS` | `1` for fast confirmations, `6+` for higher security. |
 
-## Step 2 — Place your NERVA wallet file
+## Step 2 - Place your NERVA wallet file
 
 ```bash
 # Copy your wallet file into the volume mount point:
@@ -51,7 +51,7 @@ docker run --rm -v nerva-marketplace_nerva_wallet:/keys \
 (Or just copy them into `/var/lib/docker/volumes/nerva-marketplace_nerva_wallet/_data/`
 directly.)
 
-## Step 3 — Start the backend
+## Step 3 - Start the backend
 
 ```bash
 ./backend/create_bridge_network.sh
@@ -71,7 +71,7 @@ curl http://localhost:8880/health   # → {"status":"ok","wallet":"connected"}
 If `wallet` shows `stub`, the `nerva-py` package isn't installed in the
 payments container. Check the build logs.
 
-## Step 4 — Configure SMTP for activation emails
+## Step 4 - Configure SMTP for activation emails
 
 Open `backend/market_service/src/user_routes.py` and find the
 `TODO: send activation email` comment in `user_registration_submit`.
@@ -105,7 +105,7 @@ Add `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` to your `.env`
 and the docker-compose.yml `environment` block for
 `marketplace_rest_microservices`.
 
-## Step 5 — Build and deploy the frontend
+## Step 5 - Build and deploy the frontend
 
 On your build machine (or the same server):
 
@@ -143,11 +143,11 @@ cd /opt/nerva-marketplace
 NODE_ENV=production node server.js
 ```
 
-(Or wrap it in a systemd service / Docker container — your choice.)
+(Or wrap it in a systemd service / Docker container - your choice.)
 
-## Step 6 — HTTPS termination
+## Step 6 - HTTPS termination
 
-Use Caddy (recommended — automatic Let's Encrypt) or nginx + certbot.
+Use Caddy (recommended - automatic Let's Encrypt) or nginx + certbot.
 
 ### Caddy example
 
@@ -231,7 +231,7 @@ server {
 }
 ```
 
-## Step 7 — Backups
+## Step 7 - Backups
 
 Set up daily backups of:
 
@@ -248,16 +248,16 @@ Set up daily backups of:
    ```bash
    tar czf /backups/nerva-wallet-$(date +%F).tar.gz /var/lib/docker/volumes/nerva-marketplace_nerva_wallet/_data/
    ```
-   ⚠️ **Encrypt this backup** — it contains the keys that control all
+   ⚠️ **Encrypt this backup** - it contains the keys that control all
    marketplace payments. Use `gpg --symmetric` or age.
 
-## Step 8 — Monitoring
+## Step 8 - Monitoring
 
 At minimum, monitor:
 
 - Container health (`docker compose ps`).
-- Disk space (`df -h`) — MySQL and image storage grow over time.
-- NERVA wallet balance — if it drops unexpectedly, you've been compromised.
+- Disk space (`df -h`) - MySQL and image storage grow over time.
+- NERVA wallet balance - if it drops unexpectedly, you've been compromised.
 - HTTP 5xx rate on the frontend and backends.
 - WebSocket connection count on `:2052`.
 
@@ -267,7 +267,7 @@ For a more serious deployment, add:
 - Loki for logs.
 - Uptime Robot / Better Stack for external probes.
 
-## Step 9 — Updates
+## Step 9 - Updates
 
 ```bash
 cd /opt/nerva-marketplace
@@ -279,7 +279,7 @@ docker compose up -d
 Database migrations: currently schema changes require manual `mysql`
 application. Run the new `schema.sql` against each DB (it uses
 `CREATE TABLE IF NOT EXISTS` so it's safe to re-run, but doesn't do
-in-place schema migrations — a proper migration tool like Alembic is
+in-place schema migrations - a proper migration tool like Alembic is
 planned).
 
 ## Rollback
@@ -292,7 +292,7 @@ docker compose build
 docker compose up -d
 ```
 
-Database rollbacks require restoring from backup — make sure you have
+Database rollbacks require restoring from backup - make sure you have
 one before each update.
 
 ## Hardening checklist
@@ -304,7 +304,7 @@ one before each update.
 - [ ] Firewall: only 80, 443, and 22 (SSH) are publicly accessible.
   - 8080, 8880, 2052, 3306, 6379, 5672, 15672, 28082 should **not** be public.
 - [ ] MySQL root passwords are not the default.
-- [ ] Redis requires authentication (it does — via `--requirepass`).
+- [ ] Redis requires authentication (it does - via `--requirepass`).
 - [ ] RabbitMQ management UI (port 15672) is either not exposed or
   behind basic auth + a strong password.
 - [ ] NERVA wallet volume is encrypted at rest (or the host disk is).

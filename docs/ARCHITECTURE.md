@@ -4,11 +4,11 @@
 
 NERVA Marketplace is a three-tier system:
 
-1. **Frontend** — a Next.js 16 single-page app served to the browser.
+1. **Frontend** - a Next.js 16 single-page app served to the browser.
    Talks to the backend over HTTP + WebSocket.
-2. **Market service** — a Python FastAPI app that manages users,
+2. **Market service** - a Python FastAPI app that manages users,
    listings, carts, and orders. Backed by MySQL and Redis.
-3. **Invoice service** — a Python FastAPI app + WebSocket server that
+3. **Invoice service** - a Python FastAPI app + WebSocket server that
    manages invoices and pushes real-time payment notifications to the
    browser. Backed by MySQL, RabbitMQ, and a NERVA wallet daemon.
 
@@ -46,7 +46,7 @@ NERVA Marketplace is a three-tier system:
 └──────────────────────────────────────────────────────────────────────────────┘
 ```
 
-## Data flow — checkout
+## Data flow - checkout
 
 ```
 Browser            market_service         invoice_service        nerva-wallet-rpc
@@ -124,7 +124,7 @@ The market and invoice services are deliberately decoupled:
 - The **invoice service** doesn't need to know about users, listings, or
   shipping. It just records "invoice N is for amount X to address A".
 - The two services communicate via a tiny REST API (`POST /invoice/create`
-  and `GET /invoice/{id}`) — they could be split into separate repos or
+  and `GET /invoice/{id}`) - they could be split into separate repos or
   deployed by separate teams without changing either codebase.
 
 ## Why RabbitMQ + WebSocket?
@@ -143,7 +143,7 @@ This decouples the **detection** (synchronous, must be fast) from the
 **notification** (async, can retry).
 
 Without RabbitMQ, `process_new_tx.py` would need to know which browser
-is currently viewing which invoice — that's state that belongs in the
+is currently viewing which invoice - that's state that belongs in the
 WebSocket server, not in a one-shot script.
 
 ## Frontend architecture
@@ -196,16 +196,16 @@ The frontend supports two modes:
 | Mode | Trigger | Behaviour |
 |------|---------|-----------|
 | **Dev / preview** | `NEXT_PUBLIC_MARKET_API_BASE_URL` empty | Mock API routes under `/api/market/*` and `/api/invoice/*` serve in-memory data. WebSocket is simulated (payment auto-confirms after ~13s). Prisma + SQLite for any persistent state. |
-| **Production** | `NEXT_PUBLIC_MARKET_API_BASE_URL` set | All API calls go to the Python FastAPI backend. WebSocket connects to the real `:2052` server. No Prisma — backend uses MySQL. |
+| **Production** | `NEXT_PUBLIC_MARKET_API_BASE_URL` set | All API calls go to the Python FastAPI backend. WebSocket connects to the real `:2052` server. No Prisma - backend uses MySQL. |
 
-The switch is purely environment-variable based — the same code runs in
+The switch is purely environment-variable based - the same code runs in
 both modes. This makes local development frictionless while keeping
 production architecture clean.
 
 ## Performance considerations
 
 - **Frontend**: TanStack Query caches listings for 30s. Listing images
-  are served with `Cache-Control: public, max-age=86400` (24h) — they're
+  are served with `Cache-Control: public, max-age=86400` (24h) - they're
   immutable (UUIDs).
 - **Backend**: market service runs Uvicorn with 2 workers (configurable
   via Docker). Redis is used for sessions (TTL 2h) and rate limiting
@@ -218,9 +218,9 @@ production architecture clean.
 
 ## Scalability
 
-- The market service is **stateless** (sessions + carts are in Redis) —
+- The market service is **stateless** (sessions + carts are in Redis) -
   scale it horizontally by adding more Uvicorn workers / containers.
-- The invoice service REST API is **stateless** — same.
+- The invoice service REST API is **stateless** - same.
 - The WebSocket server is **stateful** (in-memory `clients` dict). To
   scale beyond one instance, use a sticky-session load balancer or move
   to a distributed pub/sub (e.g. Redis Pub/Sub).

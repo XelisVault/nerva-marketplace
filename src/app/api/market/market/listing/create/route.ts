@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const VALID_FILE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
-/** POST /api/market/market/listing/create — multipart form data. */
+/** POST /api/market/market/listing/create - multipart form data. */
 export async function POST(req: Request) {
   const user = await getCurrentUser();
   if (!user) {
@@ -87,7 +87,7 @@ export async function POST(req: Request) {
     );
   }
 
-  // For the mock, we don't persist the actual file bytes — we store a
+  // For the mock, we don't persist the actual file bytes - we store a
   // reference name so the image endpoint can generate a placeholder.
   // In production, the Python backend stores the real file on disk.
   const imageName = `mock-${uuidv4().slice(0, 8)}`;

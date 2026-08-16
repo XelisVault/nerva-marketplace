@@ -21,12 +21,12 @@ export function Footer() {
               Privacy
             </Link>
             <a
-              href="https://getnerva.org"
+              href="https://nerva.one"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-foreground"
             >
-              getnerva.org
+              nerva.one
             </a>
             <a
               href="https://github.com/XelisVault/nerva-marketplace"
