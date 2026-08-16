@@ -1,16 +1,16 @@
 # NERVA Marketplace
 
-Marketplace pour acheter et vendre des biens avec NERVA (XNV), la crypto CPU-minable.
+A marketplace to buy and sell goods with NERVA (XNV), the CPU-minable privacy coin.
 
-## C'est quoi
+## What it is
 
-Un marketplace ou les prix sont en XNV. Les vendeurs creent des annonces avec leur propre adresse de paiement NERVA. Les acheteurs paient directement au vendeur. Le marketplace ne garde jamais les fonds.
+A marketplace where prices are in XNV. Vendors create listings with their own NERVA payment address. Buyers pay the vendor directly. The marketplace never holds funds.
 
-NERVA c'est une crypto privee, fork de Monero, minable uniquement au CPU. Pas de pools, pas d'ASIC. Site officiel: https://nerva.one
+NERVA is a privacy coin, a fork of Monero, mineable only on CPU. No pools, no ASICs. Official site: https://nerva.one
 
-## Demarrage rapide (frontend seul)
+## Quick start (frontend only)
 
-Le frontend tourne tout seul en mode dev avec une API mock integree. Pas besoin de Python, MySQL, ou wallet NERVA.
+The frontend runs standalone in dev mode with a built-in mock API. No Python, MySQL, or NERVA wallet needed.
 
 ```bash
 git clone https://github.com/XelisVault/nerva-marketplace.git
@@ -20,22 +20,22 @@ DATABASE_URL="file:./dev.db" bun run db:push
 DATABASE_URL="file:./dev.db" bun run dev
 ```
 
-Ouvrez http://localhost:3000
+Open http://localhost:3000
 
-Comptes de demo:
-- `admin` / `admin123` (vendeur)
-- `alice` / `alice123` (client)
+Demo accounts:
+- `admin` / `admin123` (vendor)
+- `alice` / `alice123` (customer)
 
-## Stack technique
+## Tech stack
 
-**Frontend**: Next.js 16, React 19, TypeScript, Tailwind CSS 4, shadcn/ui, Prisma (SQLite en dev)
+**Frontend**: Next.js 16, React 19, TypeScript, Tailwind CSS 4, shadcn/ui, Prisma (SQLite in dev)
 
-**Backend** (optionnel, pour les paiements reels): Python, FastAPI, MySQL, Redis, RabbitMQ, nerva-wallet-rpc
+**Backend** (optional, for real payments): Python, FastAPI, MySQL, Redis, RabbitMQ, nerva-wallet-rpc
 
 ## Architecture
 
 ```
-Navigateur (Next.js)
+Browser (Next.js)
   |
   | HTTP + WebSocket
   v
@@ -49,32 +49,32 @@ market_service (:8080)    invoice_service (:8880 REST, :2052 WS)
   MySQL + Redis               MySQL + RabbitMQ + nerva-wallet-rpc
 ```
 
-En mode dev, tout passe par les routes mock sous `/api/market/*` et `/api/invoice/*`. Cote production, on configure les variables d'env `NEXT_PUBLIC_MARKET_API_BASE_URL` et `NEXT_PUBLIC_INVOICE_API_BASE_URL` pour pointer vers le backend Python.
+In dev mode, everything goes through mock routes under `/api/market/*` and `/api/invoice/*`. In production, set the env vars `NEXT_PUBLIC_MARKET_API_BASE_URL` and `NEXT_PUBLIC_INVOICE_API_BASE_URL` to point at the Python backend.
 
-## Paiements
+## Payments
 
-Quand un acheteur fait un checkout:
+When a buyer checks out:
 
-1. Le marketplace cree une invoice avec l'adresse de paiement du vendeur
-2. L'acheteur envoie le montant exact en XNV a cette adresse
-3. Le daemon nerva-wallet-rpc detecte la transaction
-4. `process_new_tx.py` verifie le montant et marque l'invoice comme confirmee
-5. Le serveur WebSocket notifie le navigateur en temps reel
-6. Le vendeur voit la commande comme payee
+1. The marketplace creates an invoice with the vendor's payment address
+2. The buyer sends the exact XNV amount to that address
+3. The nerva-wallet-rpc daemon detects the transaction
+4. `process_new_tx.py` verifies the amount and marks the invoice as confirmed
+5. The WebSocket server notifies the browser in real time
+6. The vendor sees the order as paid
 
-Les paiements vont directement au vendeur. Le marketplace ne custodie rien.
+Payments go directly to the vendor. The marketplace is non-custodial.
 
-## Demarrage full-stack avec Docker
+## Full stack with Docker
 
 ```bash
 cp .env.example .env
-# editez .env avec des mots de passe solides
+# edit .env with strong passwords
 
 ./backend/create_bridge_network.sh
 docker compose up --build
 ```
 
-Puis lancez le frontend en pointant vers le backend:
+Then run the frontend pointing at the backend:
 
 ```bash
 NEXT_PUBLIC_MARKET_API_BASE_URL=http://localhost:8080 \
@@ -85,33 +85,33 @@ bun run dev
 
 ## Documentation
 
-- [docs/USER_GUIDE.md](docs/USER_GUIDE.md) - Guide acheteur
-- [docs/VENDOR_GUIDE.md](docs/VENDOR_GUIDE.md) - Guide vendeur
-- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) - Architecture technique
-- [docs/SECURITY.md](docs/SECURITY.md) - Securite et correctifs
-- [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) - Deploiement production
+- [docs/USER_GUIDE.md](docs/USER_GUIDE.md) - Buyer guide
+- [docs/VENDOR_GUIDE.md](docs/VENDOR_GUIDE.md) - Vendor guide
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) - Technical architecture
+- [docs/SECURITY.md](docs/SECURITY.md) - Security and fixes
+- [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) - Production deployment
 
-## Securite
+## Security
 
-Ce fork corrige plusieurs problemes de securite par rapport au depot original `benevanoff/nerva-marketplace`:
+This fork fixes several security issues from the original `benevanoff/nerva-marketplace` repo:
 
-- Injection SQL: toutes les requetes utilisent des tuples parametres
-- Sessions: TTL de 2h dans Redis (avant: pas de TTL)
-- Autorisation vendor: verifiee sur chaque endpoint (avant: TODO)
-- Rate limiting: login, register, creation d'annonce
-- Validation des images: extension + MIME + magic bytes
-- Protection path traversal sur les images
-- Pas de mots de passe en dur dans le code
-- Healthchecks sur tous les services
+- SQL injection: all queries use parameterized tuples
+- Sessions: 2h TTL in Redis (was: no TTL)
+- Vendor authorization: checked on every endpoint (was: TODO)
+- Rate limiting: login, register, listing creation
+- Image validation: extension + MIME + magic bytes
+- Path traversal protection on images
+- No hardcoded passwords in code
+- Healthchecks on all services
 
-Voir [docs/SECURITY.md](docs/SECURITY.md) pour la liste complete.
+See [docs/SECURITY.md](docs/SECURITY.md) for the full list.
 
 ## License
 
-MIT. Voir [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).
 
 ## Credits
 
-- Concept original: [@benevanoff](https://github.com/benevanoff)
+- Original concept: [@benevanoff](https://github.com/benevanoff)
 - NERVA: [github.com/nerva-project/nerva](https://github.com/nerva-project/nerva) - [nerva.one](https://nerva.one)
 - UI: [shadcn/ui](https://ui.shadcn.com), [Tailwind CSS](https://tailwindcss.com), [Lucide icons](https://lucide.dev)
