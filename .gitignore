@@ -1,5 +1,5 @@
 # dependencies
-/node_modules
+node_modules
 /.pnp
 .pnp.*
 .yarn/*
@@ -9,14 +9,14 @@
 !.yarn/versions
 
 # testing
-/coverage
+coverage
 
 # next.js
-/.next/
+.next/
 /out/
 
 # production
-/build
+build
 
 # misc
 .DS_Store
@@ -28,16 +28,20 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files — NEVER commit secrets
+# env files - NEVER commit secrets
 .env
 .env*.local
 .env.production
 .env.local
 backend/.env
 backend/**/.env
+frontend/.env
+frontend/.env*.local
 
 # prisma
-/prisma/migrations/dev/
+frontend/prisma/migrations/dev/
+frontend/prisma/*.db
+frontend/prisma/*.db-journal
 
 # typescript
 *.tsbuildinfo
@@ -47,6 +51,8 @@ next-env.d.ts
 *.log
 dev.log
 server.log
+frontend/dev.log
+frontend/server.log
 
 # python
 __pycache__/
@@ -80,7 +86,6 @@ ENV/
 *.db
 *.sqlite
 *.sqlite3
-db/
 backend/**/listing_image_storage/
 
 # docker volumes
@@ -97,6 +102,3 @@ backend/**/data/
 .zscripts/
 upload/
 download/
-scripts/
-skills/
-tool-results/

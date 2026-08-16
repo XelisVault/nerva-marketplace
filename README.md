@@ -8,16 +8,30 @@ A marketplace where prices are in XNV. Vendors create listings with their own NE
 
 NERVA is a privacy coin, a fork of Monero, mineable only on CPU. No pools, no ASICs. Official site: https://nerva.one
 
+## Repo structure
+
+```
+nerva-marketplace/
+├── frontend/          # Next.js 16 app (React 19, TypeScript, Tailwind 4, shadcn/ui)
+├── backend/           # Python FastAPI services
+│   ├── market_service/    # users, listings, cart, orders (MySQL + Redis)
+│   └── invoice_service/   # invoices, payment detection, WebSocket (MySQL + RabbitMQ + nerva-wallet-rpc)
+├── docs/              # user / vendor / architecture / security / deployment docs
+├── scripts/           # helper scripts
+├── docker-compose.yml # full-stack backend
+└── README.md
+```
+
 ## Quick start (frontend only)
 
 The frontend runs standalone in dev mode with a built-in mock API. No Python, MySQL, or NERVA wallet needed.
 
 ```bash
 git clone https://github.com/XelisVault/nerva-marketplace.git
-cd nerva-marketplace
+cd nerva-marketplace/frontend
 bun install
-DATABASE_URL="file:./dev.db" bun run db:push
-DATABASE_URL="file:./dev.db" bun run dev
+bun run db:push
+bun run dev
 ```
 
 Open http://localhost:3000
@@ -28,14 +42,14 @@ Demo accounts:
 
 ## Tech stack
 
-**Frontend**: Next.js 16, React 19, TypeScript, Tailwind CSS 4, shadcn/ui, Prisma (SQLite in dev)
+**Frontend** (`frontend/`): Next.js 16, React 19, TypeScript, Tailwind CSS 4, shadcn/ui, Prisma (SQLite in dev)
 
-**Backend** (optional, for real payments): Python, FastAPI, MySQL, Redis, RabbitMQ, nerva-wallet-rpc
+**Backend** (`backend/`, optional, for real payments): Python, FastAPI, MySQL, Redis, RabbitMQ, nerva-wallet-rpc
 
 ## Architecture
 
 ```
-Browser (Next.js)
+Browser (Next.js frontend)
   |
   | HTTP + WebSocket
   v
@@ -49,7 +63,7 @@ market_service (:8080)    invoice_service (:8880 REST, :2052 WS)
   MySQL + Redis               MySQL + RabbitMQ + nerva-wallet-rpc
 ```
 
-In dev mode, everything goes through mock routes under `/api/market/*` and `/api/invoice/*`. In production, set the env vars `NEXT_PUBLIC_MARKET_API_BASE_URL` and `NEXT_PUBLIC_INVOICE_API_BASE_URL` to point at the Python backend.
+In dev mode, everything goes through mock routes under `/api/market/*` and `/api/invoice/*`. In production, set the env vars `NEXT_PUBLIC_MARKET_API_BASE_URL` and `NEXT_PUBLIC_INVOICE_API_BASE_URL` in `frontend/.env` to point at the Python backend.
 
 ## Payments
 
@@ -66,6 +80,8 @@ Payments go directly to the vendor. The marketplace is non-custodial.
 
 ## Full stack with Docker
 
+From the repo root:
+
 ```bash
 cp .env.example .env
 # edit .env with strong passwords
@@ -77,6 +93,7 @@ docker compose up --build
 Then run the frontend pointing at the backend:
 
 ```bash
+cd frontend
 NEXT_PUBLIC_MARKET_API_BASE_URL=http://localhost:8080 \
 NEXT_PUBLIC_INVOICE_API_BASE_URL=http://localhost:8880 \
 NEXT_PUBLIC_INVOICE_WS_URL=ws://localhost:2052 \

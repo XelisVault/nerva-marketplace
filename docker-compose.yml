@@ -14,7 +14,7 @@ services:
   # ---------- Market service dependencies ----------
   db:
     build:
-      context: ../backend/market_service/infrastructure
+      context: ./backend/market_service/infrastructure
       dockerfile: Dockerfile.db
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASS:?DB_PASS is required}
@@ -45,7 +45,7 @@ services:
 
   marketplace_rest_microservices:
     build:
-      context: ../backend/market_service
+      context: ./backend/market_service
       dockerfile: infrastructure/Dockerfile.marketplace
     environment:
       DB_HOST: db
@@ -62,7 +62,7 @@ services:
       RATE_LIMIT_REGISTER_PER_MIN: ${RATE_LIMIT_REGISTER_PER_MIN:-5}
       RATE_LIMIT_CREATE_LISTING_PER_MIN: ${RATE_LIMIT_CREATE_LISTING_PER_MIN:-10}
     volumes:
-      - ../backend/market_service:/app
+      - ./backend/market_service:/app
       - listing_images:/app/listing_image_storage
     ports:
       - "8080:8080"
@@ -82,7 +82,7 @@ services:
   # ---------- Invoice service dependencies ----------
   db_invoice:
     build:
-      context: ../backend/invoice_service/infrastructure
+      context: ./backend/invoice_service/infrastructure
       dockerfile: Dockerfile.db
     environment:
       MYSQL_ROOT_PASSWORD: ${INV_DB_PASS:?INV_DB_PASS is required}
@@ -115,7 +115,7 @@ services:
 
   nerva:
     build:
-      context: ../backend/invoice_service
+      context: ./backend/invoice_service
       dockerfile: infrastructure/Dockerfile.nerva
     environment:
       DB_HOST: db_invoice
@@ -142,7 +142,7 @@ services:
 
   payments_rest_microservices:
     build:
-      context: ../backend/invoice_service
+      context: ./backend/invoice_service
       dockerfile: infrastructure/Dockerfile.payments
     environment:
       DB_HOST: db_invoice
@@ -153,7 +153,7 @@ services:
       WALLET_RPC_PORT: 28082
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
     volumes:
-      - ../backend/invoice_service:/app
+      - ./backend/invoice_service:/app
     ports:
       - "8880:8880"
     depends_on:
@@ -171,7 +171,7 @@ services:
 
   payments_websocket_server:
     build:
-      context: ../backend/invoice_service
+      context: ./backend/invoice_service
       dockerfile: infrastructure/Dockerfile.websockets
     environment:
       DB_HOST: db_invoice
