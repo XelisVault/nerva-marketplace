@@ -1,31 +1,92 @@
 .listing-container {
     display: grid;
     justify-content: center;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+.listing-container img {
+    max-width: 100%;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
 }
 
 .detail-choices-bar {
     display: flex;
+    border-bottom: 2px solid var(--color-border);
+    margin: 20px 0;
 }
 
 .detail-choices-option {
-    padding: 10px;
+    padding: 10px 16px;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.15s ease;
+}
+
+.detail-choices-option:hover {
+    color: var(--color-primary);
 }
 
 .detail-choices-option-selected {
-    padding: 10px;
-    text-decoration: underline;
+    padding: 10px 16px;
+    color: var(--color-primary);
+    border-bottom: 2px solid var(--color-primary);
+    margin-bottom: -2px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
 }
 
 .overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.5);
-  }
-  .modal {
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    z-index: 200;
+}
+
+.modal {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: beige;
-  }
-  
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    z-index: 201;
+    min-width: 300px;
+}
+
+.modal h3 {
+    margin: 0 0 12px;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.modal p {
+    margin: 0 0 16px;
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    line-height: 1.5;
+}
+
+.modal button {
+    padding: 8px 20px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.9rem;
+    transition: box-shadow 0.15s ease;
+}
+
+.modal button:hover {
+    box-shadow: var(--shadow-md);
+}

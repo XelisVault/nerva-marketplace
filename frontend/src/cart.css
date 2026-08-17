@@ -1,21 +1,72 @@
 .cart-grid {
     display: grid;
-    grid-template-columns: 40% 40% 20%;
-    gap: 5px;
-    grid-auto-flow: column;
-    box-shadow: 0 0 5px 2px rgba(0, 0, 0, 0.2);
+    grid-template-columns: 80px 1fr auto;
+    gap: 16px;
+    align-items: center;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    background: var(--color-surface);
+    width: 100%;
+    max-width: 600px;
+    transition: box-shadow 0.15s ease;
+}
+
+.cart-grid:hover {
+    box-shadow: var(--shadow-md);
 }
 
 .cart-grid img {
-    width: 100%;
-    height: auto;
+    width: 80px;
+    height: 80px;
     object-fit: cover;
+    border-radius: var(--radius-sm);
+}
+
+.cart-grid h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 4px;
+    color: var(--color-text);
+}
+
+.cart-grid p {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    margin: 0;
+}
+
+.cart-grid button {
+    padding: 6px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    color: var(--color-danger);
+    font-size: 0.85rem;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s ease;
+}
+
+.cart-grid button:hover {
+    background: #fef2f2;
 }
 
 @media screen and (max-width: 600px) {
-    .cart-grid h2, .cart-grid p {
-        font-size: smaller;
-        margin: 5px 0;
+    .cart-grid {
+        grid-template-columns: 60px 1fr;
+        gap: 12px;
+        padding: 12px;
+    }
+
+    .cart-grid img {
+        width: 60px;
+        height: 60px;
+    }
+
+    .cart-grid h2 {
+        font-size: 0.9rem;
     }
 }
 
@@ -23,29 +74,67 @@
     display: grid;
     place-items: center;
     margin: 0;
-    gap: 15px;
+    gap: 16px;
+    padding: 24px;
 }
 
 .shipping-details-section {
     width: 90%;
-    max-width: 500px;
-    padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background-color: #f9f9f9;
+    max-width: 600px;
+    padding: 20px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-sm);
 }
 
 .shipping-details-section h3 {
-    margin-top: 0;
-    margin-bottom: 10px;
+    margin: 0 0 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text);
 }
 
 .shipping-details-section textarea {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-family: Arial, sans-serif;
-    font-size: 14px;
+    padding: 12px;
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: 0.9rem;
+    color: var(--color-text);
+    background: var(--color-bg);
     resize: vertical;
+    box-sizing: border-box;
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.shipping-details-section textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    background: var(--color-surface);
+    box-shadow: 0 0 0 3px rgba(33, 157, 229, 0.12);
+}
+
+.cart-container > button {
+    padding: 12px 32px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: transform 0.1s ease, box-shadow 0.15s ease;
+}
+
+.cart-container > button:hover:not(:disabled) {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+}
+
+.cart-container > button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
