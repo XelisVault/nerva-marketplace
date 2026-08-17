@@ -30,17 +30,33 @@ const NavButton = ({ onClick }) => {
     );
 };
 
-const NavTab = ({ isOpen }) => {
+const NavTab = ({ isOpen, onClose }) => {
     const navigate = useNavigate();
-    const { userDetails } = useContext(UserContext);
+    const { userDetails, refetchUser } = useContext(UserContext);
     const isVendor = Boolean(userDetails && userDetails.is_vendor);
+
+    const handleLogout = async () => {
+        try {
+            await fetch(process.env.REACT_APP_MARKET_MICROSERVICES + '/users/logout', {
+                method: 'POST',
+                credentials: 'include'
+            });
+        } catch (error) {
+            console.error('Error logging out:', error);
+        }
+        // Refresh the user context so the UI reflects the signed-out state.
+        // whoami will return null because the session cookie has been cleared.
+        await refetchUser();
+        if (onClose) onClose();
+        navigate('/');
+    };
 
     return (
         <div className={`navbar ${isOpen ? 'open' : ''}`}>
             {isVendor && <button onClick={() => {navigate('/create_listing')}}>Create Listing</button>}
             {isVendor && <button onClick={() => {navigate('/vendor/orders')}}>Vendor Orders</button>}
             {userDetails && !isVendor && <button onClick={() => {navigate('/customer/orders')}}>Your Orders</button>}
-            {userDetails ? <button>Logout</button> : <button onClick={() => {navigate('/login')}}>Login</button>}
+            {userDetails ? <button onClick={handleLogout}>Logout</button> : <button onClick={() => {navigate('/login')}}>Login</button>}
         </div>
     );
 };
@@ -50,13 +66,16 @@ const NavBar = () => {
     const toggleNavbar = () => {
         setIsNavbarOpen(prevState => !prevState);
     };
+    const closeNavbar = () => {
+        setIsNavbarOpen(false);
+    };
     return (<>
         <div className='markethome-container'>
             <NavButton onClick={toggleNavbar} />
             <h1>Marketplace</h1>
             <ShoppingCartButton />
         </div>
-        <NavTab isOpen={isNavbarOpen} />
+        <NavTab isOpen={isNavbarOpen} onClose={closeNavbar} />
     </>);
 };
 
