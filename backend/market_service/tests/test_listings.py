@@ -17,7 +17,8 @@ class TestListingsAPIs(unittest.TestCase):
         "form_text": {
             'title': 'Test Listing',
             'description': 'This is an example description',
-            'price_xnv': 3
+            'price_xnv': 3,
+            'quantity_available': 5
         },
         "form_file": {'file': open('tests/test.png', 'rb')}
     }
@@ -66,6 +67,7 @@ class TestListingsAPIs(unittest.TestCase):
             assert response_json[0]["description"] == "This is an example description"
             assert ".png" in response_json[0]["image_name"]
             assert response_json[0]["price_xnv"] == 3
+            assert response_json[0]["quantity_available"] == 5
             test_listing_id = response_json[0]["listing_id"]
             # get the test listing details by ID
             response = session.get(f'{self.test_host}/market/listing/{test_listing_id}')
@@ -76,9 +78,29 @@ class TestListingsAPIs(unittest.TestCase):
             assert response_json["description"] == "This is an example description"
             assert ".png" in response_json["image_name"]
             assert response_json["price_xnv"] == 3
-            # add another listing
-            response = session.post(f'{self.test_host}/market/listing/create', data=self.simple_form_data["form_text"], files={'file': open('tests/tshirt.jpeg', 'rb')})
+            assert response_json["quantity_available"] == 5
+            # add another listing without specifying quantity_available - should default to 1
+            form_text_default_qty = {
+                'title': 'Test Listing 2',
+                'description': 'Another example description that is long enough',
+                'price_xnv': 7
+            }
+            response = session.post(f'{self.test_host}/market/listing/create', data=form_text_default_qty, files={'file': open('tests/tshirt.jpeg', 'rb')})
             assert response.status_code == 200
+            response = session.get(f'{self.test_host}/market/listings')
+            response_json = response.json()
+            assert len(response_json) == 2
+            default_qty_listing = next(l for l in response_json if l["title"] == "Test Listing 2")
+            assert default_qty_listing["quantity_available"] == 1
+            # try to create a listing with an invalid quantity - should be rejected
+            form_text_bad_qty = {
+                'title': 'Bad Listing',
+                'description': 'This should be rejected',
+                'price_xnv': 1,
+                'quantity_available': 0
+            }
+            response = session.post(f'{self.test_host}/market/listing/create', data=form_text_bad_qty, files={'file': open('tests/test.png', 'rb')})
+            assert response.status_code == 422
 
 def create_test_listing():
     # make sure test user is in db

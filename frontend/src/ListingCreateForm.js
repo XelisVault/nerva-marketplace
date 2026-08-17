@@ -5,6 +5,7 @@ const ListingCreateForm = () => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [price_xnv, setPriceXNV] = useState('');
+    const [quantity_available, setQuantityAvailable] = useState('1');
     const [img_file, setIMGFile] = useState(null);
 
     const handleSubmit = async (e) => {
@@ -14,6 +15,7 @@ const ListingCreateForm = () => {
         formData.append('title', title);
         formData.append('description', description);
         formData.append('price_xnv', price_xnv);
+        formData.append('quantity_available', quantity_available);
         if (img_file) {
             formData.append('file', img_file);
         }
@@ -51,6 +53,14 @@ const ListingCreateForm = () => {
                 placeholder="Price XNV"
                 value={price_xnv}
                 onChange={(e) => setPriceXNV(e.target.value)}
+            />
+            <input
+                type="number"
+                placeholder="Quantity Available"
+                value={quantity_available}
+                onChange={(e) => setQuantityAvailable(e.target.value)}
+                min="1"
+                step="1"
             />
             <input
                 type="file"
