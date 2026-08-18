@@ -7,6 +7,7 @@ const ListingCreateForm = () => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [price_xnv, setPriceXNV] = useState('');
+    const [quantity_available, setQuantityAvailable] = useState('1');
     const [img_file, setIMGFile] = useState(null);
     const [submitting, setSubmitting] = useState(false);
     const [feedback, setFeedback] = useState(null);
@@ -22,6 +23,7 @@ const ListingCreateForm = () => {
         formData.append('title', title);
         formData.append('description', description);
         formData.append('price_xnv', price_xnv);
+        formData.append('quantity_available', quantity_available);
         if (img_file) {
             formData.append('file', img_file);
         }
@@ -38,6 +40,7 @@ const ListingCreateForm = () => {
                 setTitle('');
                 setDescription('');
                 setPriceXNV('');
+                setQuantityAvailable('1');
                 setIMGFile(null);
                 if (fileInputRef.current) fileInputRef.current.value = '';
                 setFeedback({ type: 'success', message: 'Your listing has been created.' });
@@ -100,6 +103,14 @@ const ListingCreateForm = () => {
                         placeholder="Price XNV"
                         value={price_xnv}
                         onChange={(e) => setPriceXNV(e.target.value)}
+                    />
+                    <input
+                        type="number"
+                        placeholder="Quantity Available"
+                        value={quantity_available}
+                        onChange={(e) => setQuantityAvailable(e.target.value)}
+                        min="1"
+                        step="1"
                     />
                     <input
                         type="file"
