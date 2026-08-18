@@ -30,6 +30,15 @@ const NavButton = ({ onClick }) => {
     );
 };
 
+const CloseButton = ({ onClick }) => {
+    return (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" onClick={onClick} className="navbar-close-btn">
+            <path d="M18 6L6 18" stroke="#7682E9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M6 6L18 18" stroke="#7682E9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+    );
+};
+
 const NavTab = ({ isOpen, onClose }) => {
     const navigate = useNavigate();
     const { userDetails, refetchUser } = useContext(UserContext);
@@ -53,6 +62,9 @@ const NavTab = ({ isOpen, onClose }) => {
 
     return (
         <div className={`navbar ${isOpen ? 'open' : ''}`}>
+            <div className="navbar-header">
+                <CloseButton onClick={onClose} />
+            </div>
             {isVendor && <button onClick={() => {navigate('/create_listing')}}>Create Listing</button>}
             {isVendor && <button onClick={() => {navigate('/vendor/orders')}}>Vendor Orders</button>}
             {userDetails && !isVendor && <button onClick={() => {navigate('/customer/orders')}}>Your Orders</button>}
