@@ -8,6 +8,7 @@ const ListingCreateForm = () => {
     const [description, setDescription] = useState('');
     const [price_xnv, setPriceXNV] = useState('');
     const [img_file, setIMGFile] = useState(null);
+    const [filePreview, setFilePreview] = useState(null);
     const [submitting, setSubmitting] = useState(false);
     const [feedback, setFeedback] = useState(null);
     const fileInputRef = useRef(null);
@@ -39,6 +40,7 @@ const ListingCreateForm = () => {
                 setDescription('');
                 setPriceXNV('');
                 setIMGFile(null);
+                setFilePreview(null);
                 if (fileInputRef.current) fileInputRef.current.value = '';
                 setFeedback({ type: 'success', message: 'Your listing has been created.' });
             } else {
@@ -104,8 +106,18 @@ const ListingCreateForm = () => {
                     <input
                         type="file"
                         ref={fileInputRef}
-                        onChange={(e) => setIMGFile(e.target.files[0])}
+                        onChange={(e) => {
+                            const file = e.target.files[0];
+                            setIMGFile(file);
+                            if (filePreview) URL.revokeObjectURL(filePreview);
+                            setFilePreview(file ? URL.createObjectURL(file) : null);
+                        }}
                     />
+                    {filePreview && (
+                        <div className="image-preview">
+                            <img src={filePreview} alt="Preview" />
+                        </div>
+                    )}
                     <button type="submit" disabled={submitting}>
                         {submitting ? 'Submitting...' : 'Submit'}
                     </button>
