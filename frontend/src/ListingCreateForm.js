@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import NavBar from './Navbar';
 import './listings.css'
 import './listing.css'
 
@@ -7,6 +8,7 @@ const ListingCreateForm = () => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [price_xnv, setPriceXNV] = useState('');
+    const [quantity_available, setQuantityAvailable] = useState('1');
     const [img_file, setIMGFile] = useState(null);
     const [submitting, setSubmitting] = useState(false);
     const [feedback, setFeedback] = useState(null);
@@ -22,6 +24,7 @@ const ListingCreateForm = () => {
         formData.append('title', title);
         formData.append('description', description);
         formData.append('price_xnv', price_xnv);
+        formData.append('quantity_available', quantity_available);
         if (img_file) {
             formData.append('file', img_file);
         }
@@ -38,6 +41,7 @@ const ListingCreateForm = () => {
                 setTitle('');
                 setDescription('');
                 setPriceXNV('');
+                setQuantityAvailable('1');
                 setIMGFile(null);
                 if (fileInputRef.current) fileInputRef.current.value = '';
                 setFeedback({ type: 'success', message: 'Your listing has been created.' });
@@ -81,26 +85,45 @@ const ListingCreateForm = () => {
 
     return (
         <>
+            <NavBar />
             <div className="form-container">
+                <h2 className="form-heading">Create a Listing</h2>
                 <form onSubmit={handleSubmit} encType="multipart/form-data">
+                    <label htmlFor="title">Title</label>
                     <input
+                        id="title"
                         type="text"
-                        placeholder="Title"
+                        placeholder="e.g. NVIDIA GT 730 GPU"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                     />
+                    <label htmlFor="description">Description</label>
                     <input
+                        id="description"
                         type="text"
-                        placeholder="Description"
+                        placeholder="Describe the item and its condition"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                     />
+                    <label htmlFor="price">Price (XNV)</label>
                     <input
+                        id="price"
                         type="text"
-                        placeholder="Price XNV"
+                        placeholder="1.0"
                         value={price_xnv}
                         onChange={(e) => setPriceXNV(e.target.value)}
                     />
+                    <label htmlFor="quantity">Quantity Available</label>
+                    <input
+                        id="quantity"
+                        type="number"
+                        placeholder="1"
+                        value={quantity_available}
+                        onChange={(e) => setQuantityAvailable(e.target.value)}
+                        min="1"
+                        step="1"
+                    />
+                    <label htmlFor="file">Listing Image</label>
                     <input
                         type="file"
                         ref={fileInputRef}
