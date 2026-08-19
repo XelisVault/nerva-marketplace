@@ -49,12 +49,16 @@ async def create_listing(session_id:str=Cookie(None), session_storage=Depends(ge
                          rds_client=Depends(get_db),
                          title: str = Form(...), description: str = Form(...),
                          price_xnv: float = Form(...),
+                         quantity_available: int = Form(1),
                          file: Optional[UploadFile] = File(None)):
     # We need a valid session_id
     if not session_id:
         raise HTTPException(status_code=401, detail="Must be logged in to create a listing")
     # TODO: check that the session_id actually exists in our session storage
     username = session_storage.getUserFromSession(session_id)
+    # enforce a positive integer quantity
+    if quantity_available < 1:
+        raise HTTPException(status_code=422, detail="quantity_available must be at least 1")
     # enfore a max file size
     if file.size > ListingStorage.MAX_FILE_SIZE:
         raise HTTPException(status_code=422, detail="File too big")
@@ -74,10 +78,10 @@ async def create_listing(session_id:str=Cookie(None), session_storage=Depends(ge
     async with rds_client.cursor() as cur:
         await cur.execute("""
             INSERT INTO listings
-                (title, description, image_name, price_xnv, vendor)
+                (title, description, image_name, price_xnv, vendor, quantity_available)
             VALUES
-                (%s, %s, %s, %s, %s)
-            """, (title, description, f'{img_id}.{file_type}', price_xnv, username))
+                (%s, %s, %s, %s, %s, %s)
+            """, (title, description, f'{img_id}.{file_type}', price_xnv, username, quantity_available))
 
 @market_router.get("/market/listing/image/{image_name}")
 async def get_image(image_name:str, rds_client=Depends(get_db)):
