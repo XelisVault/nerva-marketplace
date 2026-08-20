@@ -56,14 +56,19 @@ const VendorOrders = () => {
             <h1>Vendor Orders</h1>
             <div className="orders-list">
                 {orders.map((order, index) => (
-                    <span key={`${order.order_id}-${index}`} className="order-item">
+                    <div 
+                        key={`${order.order_id}-${index}`} 
+                        className="order-item"
+                        onClick={() => navigate(`/vendor/orders/${order.order_id}`)}
+                        style={{ cursor: 'pointer' }}
+                    >
                         <span className="order-id">Order ID: {order.order_id}</span>
                         <span className="order-date">Date: {order.create_time}</span>
                         <span className="order-amount">Amount: {order.amount} XNV</span>
                         <span className={`order-status status-${order.status.toLowerCase()}`}>
                             Status: {order.status}
                         </span>
-                    </span>
+                    </div>
                 ))}
             </div>
         </div>
