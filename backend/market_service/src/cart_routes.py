@@ -36,6 +36,12 @@ async def add_item_to_cart(listing_id:int, session_id:str=Cookie(None), session_
     session_storage.addItemToSessionCart(session_id, listing_id)
     print(session_storage.session_storage_client.get(session_id))
 
+@cart_router.post("/cart/remove_item/{listing_id}")
+async def remove_item_from_cart(listing_id:int, session_id:str=Cookie(None), session_storage=Depends(get_sessions)):
+    if not session_id:
+        raise HTTPException(status_code=401)
+    session_storage.removeItemFromSessionCart(session_id, listing_id)
+
 class ShippingDetails(BaseModel):
     details: str
 @cart_router.post("/cart/shipping_details/add")

@@ -67,6 +67,14 @@ class Sessions:
         current_session_data["cart"]["items"].append(listing_id)
         self.session_storage_client.set(session_id, json.dumps(current_session_data))
 
+    def removeItemFromSessionCart(self, session_id, listing_id):
+        current_session_data = json.loads(self.session_storage_client.get(session_id).decode())
+        if "cart" in current_session_data and "items" in current_session_data["cart"]:
+            current_session_data["cart"]["items"] = [
+                item for item in current_session_data["cart"]["items"] if item != listing_id
+            ]
+            self.session_storage_client.set(session_id, json.dumps(current_session_data))
+
     def updateCartShippingData(self, session_id, shipping_data):
         current_session_data = json.loads(self.session_storage_client.get(session_id).decode())
         current_session_data["cart"]["shipping_data"] = shipping_data

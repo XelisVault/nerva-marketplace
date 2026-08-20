@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './cart.css'
 
-const CartItem = ( {listing_id} ) => {
+const CartItem = ({ listing_id, onRemove }) => {
 
     const [itemDetails, setItem] = useState({"title": null, "price": 0, "image_name": ""});
+    const [removing, setRemoving] = useState(false);
 
     useEffect(() => {
         const getListingDetailsRequest = async () => {
@@ -14,7 +15,6 @@ const CartItem = ( {listing_id} ) => {
                     credentials: 'include'
                 });
                 const result = await response.json();
-                console.log(result);
                 setItem(result);
             } catch (error) {
                 console.error('Error:', error);
@@ -23,14 +23,31 @@ const CartItem = ( {listing_id} ) => {
 
         getListingDetailsRequest();
     }, [listing_id]);
+
+    const handleRemove = async () => {
+        setRemoving(true);
+        try {
+            await fetch(process.env.REACT_APP_MARKET_MICROSERVICES+'/cart/remove_item/'+listing_id, {
+                method: 'POST',
+                credentials: 'include'
+            });
+            if (onRemove) onRemove(listing_id);
+        } catch (error) {
+            console.error('Error removing item:', error);
+            setRemoving(false);
+        }
+    };
+
     return <div>
         <div className="cart-grid">
-            <img src={process.env.REACT_APP_MARKET_MICROSERVICES+"/market/listing/image/"+itemDetails.image_name} alt={"asd"} />
+            <img src={process.env.REACT_APP_MARKET_MICROSERVICES+"/market/listing/image/"+itemDetails.image_name} alt={itemDetails.title || "item"} />
             <div>
                 <h2>{itemDetails.title}</h2>
                 <p>Price: {itemDetails.price_xnv} XNV</p>
             </div>
-            <button>Remove</button>
+            <button onClick={handleRemove} disabled={removing}>
+                {removing ? 'Removing...' : 'Remove'}
+            </button>
         </div>
     </div>;
 };
@@ -41,22 +58,26 @@ const Cart = () => {
     const [isCheckingOut, setIsCheckingOut] = useState(false);
     const navigate = useNavigate();
 
+    const fetchCart = async () => {
+        try {
+            const response = await fetch(process.env.REACT_APP_MARKET_MICROSERVICES+'/cart/details', {
+                method: 'GET',
+                credentials: 'include'
+            });
+            const result = await response.json();
+            setCartDetails(result);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
     useEffect(() => {
-        const getCartDetailsRequest = async () => {
-            try {
-                const response = await fetch(process.env.REACT_APP_MARKET_MICROSERVICES+'/cart/details', {
-                    method: 'GET',
-                    credentials: 'include'
-                });
-                const result = await response.json();
-                console.log(result);
-                setCartDetails(result);
-            } catch (error) {
-                console.error('Error:', error);
-            }
-        };
-        getCartDetailsRequest();
+        fetchCart();
     }, []);
+
+    const handleRemoveItem = () => {
+        fetchCart();
+    };
 
     const postShippingDetailsRequest = async () => {
         try {
@@ -81,7 +102,6 @@ const Cart = () => {
     const postCheckoutRequest = async () => {
         setIsCheckingOut(true);
         try {
-            // First add shipping details
             const shippingSuccess = await postShippingDetailsRequest();
             if (!shippingSuccess) {
                 alert('Failed to save shipping details');
@@ -89,13 +109,11 @@ const Cart = () => {
                 return;
             }
 
-            // Then proceed with checkout
             const response = await fetch(process.env.REACT_APP_MARKET_MICROSERVICES+'/cart/checkout', {
                 method: 'POST',
                 credentials: 'include'
             });
             const result = await response.json();
-            console.log(result);
             navigate("/invoice/"+result.invoice_id);
         } catch (error) {
             console.error('Error:', error);
@@ -104,10 +122,10 @@ const Cart = () => {
         }
     };
 
-    if (cartDetails && cartDetails.items !== undefined) {
+    if (cartDetails && cartDetails.items !== undefined && cartDetails.items.length > 0) {
         return <div className="cart-container">
             {cartDetails.items.map((id, index) => (
-                    <CartItem key={`${id}-${index}`} listing_id={id} />
+                    <CartItem key={`${id}-${index}`} listing_id={id} onRemove={handleRemoveItem} />
                 ))}
             <div className="shipping-details-section">
                 <h3>Shipping Details</h3>

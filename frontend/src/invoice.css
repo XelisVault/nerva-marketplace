@@ -1,123 +1,421 @@
-.payment-details-card-grid {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 20px;
-    box-shadow: var(--shadow-md);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    padding: 24px;
-    background: var(--color-surface);
-    width: 90%;
-    max-width: 600px;
-    align-items: center;
-}
-
-.payment-details-card-grid img {
-    width: 64px;
-    height: 64px;
-    object-fit: contain;
-}
-
 .invoice-container {
-    display: grid;
-    place-items: center;
-    margin: 0;
-    gap: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
     width: 100%;
     background-color: var(--color-bg);
     min-height: 100vh;
-    padding: 24px;
+    padding: 32px 16px;
 }
 
-#readonly-textarea {
+.invoice-card {
     width: 100%;
-    padding: 12px;
-    border: 1.5px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    background-color: var(--color-bg);
-    color: var(--color-text);
-    font-size: 0.9rem;
-    font-family: 'Courier New', monospace;
-    resize: none;
-    overflow: hidden;
-    cursor: text;
-    outline: none;
-    word-break: break-all;
+    max-width: 560px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 32px;
 }
 
-#readonly-textarea:hover,
-#readonly-textarea:focus {
-    border-color: var(--color-primary);
-    background-color: var(--color-surface);
+.invoice-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.invoice-logo {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+}
+
+.invoice-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0;
+}
+
+.invoice-subtitle {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    margin: 2px 0 0;
+}
+
+.loading-text {
+    text-align: center;
+    color: var(--color-text-muted);
+    padding: 40px 0;
+    font-size: 0.95rem;
+}
+
+/* Status Bar */
+.status-bar-wrapper {
+    margin-bottom: 28px;
 }
 
 .status-bar {
     display: flex;
-    align-items: center;
-    justify-content: space-evenly;
+    align-items: flex-start;
+    justify-content: space-between;
     position: relative;
-    width: 100%;
-    max-width: 400px;
-    margin: 16px 0;
+    padding: 0 20px;
 }
 
 .status-line,
 .status-line-filled {
     position: absolute;
     height: 3px;
-    top: 50%;
-    transform: translateY(-50%);
+    top: 12px;
     border-radius: 2px;
 }
 
 .status-line {
-    width: 80%;
+    width: calc(100% - 40px);
+    left: 20px;
     background-color: var(--color-border);
 }
 
 .status-line-filled {
+    left: 20px;
     background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
-    left: 10%;
-    transition: width 0.3s ease;
+    transition: width 0.4s ease;
+}
+
+.status-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    z-index: 1;
+    width: 80px;
 }
 
 .status-dot {
-    z-index: 1;
-    width: 16px;
-    height: 16px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
-    background-color: var(--color-border);
-    margin: 0 10px;
-    transition: background 0.3s ease;
-    border: 3px solid var(--color-bg);
+    background-color: var(--color-surface);
+    border: 3px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
 }
 
 .status-dot.filled {
     background: var(--color-success);
-    box-shadow: 0 0 0 2px var(--color-success);
+    border-color: var(--color-success);
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
 }
 
-#TransactionsContainer {
+.status-label {
+    font-size: 0.72rem;
+    color: var(--color-text-muted);
+    text-align: center;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.status-label.active {
+    color: var(--color-text);
+    font-weight: 600;
+}
+
+/* Payment Card */
+.payment-card {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+
+.payment-amount-section {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 24px;
+    background: linear-gradient(135deg, rgba(33, 157, 229, 0.05) 0%, rgba(118, 130, 233, 0.05) 100%);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.payment-logo {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
+.payment-amount-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.payment-label {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.payment-amount {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--color-text);
+    line-height: 1.2;
+}
+
+.payment-address-section {
+    padding: 24px;
+}
+
+.payment-instruction {
+    font-size: 0.9rem;
+    color: var(--color-text);
+    margin: 0 0 16px;
+    line-height: 1.5;
+}
+
+.payment-instruction strong {
+    color: var(--color-primary-dark);
+    font-weight: 600;
+}
+
+.address-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--color-bg);
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    margin-bottom: 12px;
+}
+
+.address-text {
+    flex: 1;
+    font-family: 'Courier New', monospace;
+    font-size: 0.82rem;
+    color: var(--color-text);
+    word-break: break-all;
+    line-height: 1.4;
+}
+
+.copy-btn {
+    padding: 6px 14px;
+    border: 1px solid var(--color-primary);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    color: var(--color-primary);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.copy-btn:hover {
+    background: var(--color-primary);
+    color: #fff;
+}
+
+.payment-hint {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Transactions */
+.transactions-wrapper {
+    margin-top: 8px;
+}
+
+.transactions-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0 0 12px;
+}
+
+.transaction-item {
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
-    padding: 12px 16px;
-    margin: 8px 0;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    background: var(--color-surface);
+}
+
+.transaction-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 3px 0;
+}
+
+.transaction-label {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    font-weight: 500;
+}
+
+.transaction-value {
+    font-size: 0.85rem;
+    color: var(--color-text);
+    font-weight: 500;
+    text-align: right;
+}
+
+.transaction-value.mono {
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    max-width: 60%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.transaction-status {
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.transaction-status.pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.transaction-status.confirmed {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+/* Success Screen */
+.success-screen {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.success-icon-wrapper {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+    background: linear-gradient(135deg, var(--color-success) 0%, #059669 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.25);
+    animation: success-pop 0.4s ease;
+}
+
+@keyframes success-pop {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.success-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0 0 8px;
+}
+
+.success-subtitle {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    margin: 0 0 24px;
+    line-height: 1.5;
+}
+
+.success-subtitle strong {
+    color: var(--color-text);
+    font-weight: 600;
+}
+
+.success-details {
+    text-align: left;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 16px 20px;
+    margin-bottom: 20px;
     background: var(--color-bg);
 }
 
-#TransactionsContainer p {
-    margin: 4px 0;
-    font-size: 0.85rem;
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    font-size: 0.82rem;
     color: var(--color-text-muted);
+    font-weight: 500;
+}
+
+.detail-value {
+    font-size: 0.85rem;
+    color: var(--color-text);
+    font-weight: 500;
+    text-align: right;
+    max-width: 60%;
+    word-break: break-all;
+}
+
+.detail-value.mono {
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.status-badge.confirmed {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.success-footer {
+    font-size: 0.82rem;
+    color: var(--color-text-muted);
+    margin: 0;
+    line-height: 1.5;
 }
 
 @media screen and (max-width: 600px) {
-    .payment-details-card-grid {
-        grid-template-columns: 1fr;
-        text-align: center;
+    .invoice-card {
+        padding: 20px;
     }
 
-    .payment-details-card-grid img {
-        margin: 0 auto;
+    .payment-amount {
+        font-size: 1.4rem;
+    }
+
+    .status-step {
+        width: 60px;
+    }
+
+    .status-label {
+        font-size: 0.65rem;
     }
 }
