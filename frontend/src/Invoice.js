@@ -195,7 +195,7 @@ const Invoice = () => {
                     )
                 );
             }
-            setProgess(progress => progress + 1);
+            setProgess(progress => progress + 2); // hack to jump straight to complete
         });
         socket.addEventListener('error', (event) => { console.error('WebSocket error:', event); });
         socket.addEventListener('close', () => { console.log('Disconnected from WS Server'); });
